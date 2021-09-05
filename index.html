@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html class="no-js" lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AnkiFrequencyInserter">
+  <title>AnkiFrequencyInserter</title>
+  <link href="assets/img/favicon.ico" rel="icon">
+  <link href="assets/css/style.css" media="screen, projection" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+	<div role="main" class="main">
+			
+	  <h1><img src="assets/img/favicon.ico" height="32"/>  Anki Frequency Inserter</h1>
+	  <!--div id="subtitle" style="text-align: center" title="hover text">subtitle</div>
+      <div id="subtitle2" title="hover" style="text-align: center">subtitle2.</div-->
+<hr>
+
+<a class="btn btn-blue" id="connectBtn">Connect to AnkiConnect</a>
+
+<p>AnkiConnect response:</p>
+<div class="logbox" id="ankiConnectResponseBox"></div>
+
+<p>Cards where frequency will be newly added:</p>
+<div class="logbox" id="cardsFreqToAdd"></div>
+
+<p>Cards where frequency will be changed:
+<div class="logbox" id="cardsFreqToChange"></div>
+</p>
+
+<p id="noChangesBoxHeader">Cards that already have a frequency:</p>
+<div class="logbox" id="noChangesBox"></div>
+
+<a class="btn btn-blue" id="doChangesBtn">Execute changes</a>
+
+<hr>
+
+<div id="foot">
+    <p>@ 2021-09 Anki Frequency Inserter by <a href="https://community.wanikani.com/t/multi-radical-kanji-search-web/46781">Saimin@WK</a>
+
+<script src="assets/js/frequencyInserter.js"></script> 
+
+  </div>
+</body>
+</html>
