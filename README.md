@@ -6,5 +6,6 @@ WIP, currently only showing changes, but can't be executed yet:
 
 To prevent a CORS error, you need to add the source from access the index.html (e.g. localhost:8000)
 to the "webCorsOriginList" in Anki via Tools -> Addons -> Config on AnkiConnect.
+
 To build innocent_terms_complete.js, execute `node parseCorpus.js` in the extracted innocent terms folder. then put it into assets/js.
 (i'm considering adding it to the assets, though it's ~4.3MB right now)
