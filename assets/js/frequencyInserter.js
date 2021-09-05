@@ -1,6 +1,8 @@
 class FrequencyInserter {
     ankiConnectVersion = 6;
     frequencyFieldName = "FrequencyInnocent";
+    ankiConnectUrl = "http://localhost:8765";
+    ankiQueryAddition = ""; // modifies the anki query, e.g. this could be "deck:MyJPDeck".
     notesToChange = [];
     notesNoChanges = [];
     notesWithoutFreq = [];
@@ -37,7 +39,7 @@ class FrequencyInserter {
     }
 
     async connectClick() {
-        const noteIds = await this.findNotes(`${this.frequencyFieldName}:*`);
+        const noteIds = await this.findNotes(`${this.ankiQueryAddition.trim()} ${this.frequencyFieldName}:*`);
         const notes = await this.notesInfo(noteIds);
         console.log("total notes found: " + notes.length);
         this.processNotes(notes);
@@ -197,7 +199,7 @@ class FrequencyInserter {
                 }
             });
     
-            xhr.open('POST', 'http://localhost:8765');
+            xhr.open('POST', this.ankiConnectUrl);
             xhr.send(JSON.stringify({action, version, params}));
         });
     }
@@ -212,4 +214,5 @@ class FrequencyInserter {
 document.addEventListener("DOMContentLoaded", function(event) { 
     const inserter = new FrequencyInserter();
     inserter.setupHtmlElements();
+    window.ankiInserter = inserter; // for console access like changing AnkiConnect url/port
 });
