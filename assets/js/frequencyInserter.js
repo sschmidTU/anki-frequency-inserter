@@ -119,6 +119,7 @@ class FrequencyInserter {
     }
 
     async connectClick() {
+        // TODO send requestPermission call
         const noteIds = await this.findNotes(`${this.ankiQueryAddition.trim()} ${this.frequencyFieldName}:*`);
         const notes = await this.notesInfo(noteIds);
         console.log("total notes found: " + notes.length);
