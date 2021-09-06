@@ -3,10 +3,9 @@ class FrequencyInserter {
     frequencyFieldName = "FrequencyInnocent";
     ankiConnectUrl = "http://localhost:8765";
     ankiQueryAddition = ""; // modifies the anki query, e.g. this could be "deck:MyJPDeck".
-    notesToChange = [];
+    notesWithChanges = [];
     notesNoChanges = [];
     notesWithoutFreq = [];
-    notesWithChanges = [];
     // HTML stuff
     responseBox;
     freqNewBox;
@@ -17,11 +16,12 @@ class FrequencyInserter {
     noFreqFoundBoxHeader;
     noChangesBox;
     noChangesBoxHeader;
+    updatedBox;
+    updatedBoxHeader;
 
     FrequencyInserter() {}
 
     setupHtmlElements() {
-        const connectBtn = document.getElementById("connectBtn");
         const self = this;
         this.responseBox = document.getElementById("ankiConnectResponseBox");
         this.freqNewBox = document.getElementById("notesFreqNewBox");
@@ -32,10 +32,90 @@ class FrequencyInserter {
         this.noFreqFoundBoxHeader = document.getElementById("noFreqFoundBoxHeader");
         this.noChangesBox = document.getElementById("noChangesBox");
         this.noChangesBoxHeader = document.getElementById("noChangesBoxHeader");
+        this.updatedBox = document.getElementById("updatedBox");
+        this.updatedBoxHeader = document.getElementById("updatedBoxHeader");
+        const connectBtn = document.getElementById("connectBtn");
         connectBtn.onclick = async function() {
             await self.connectClick();
             //await self.testEmptyCardsError();
         };
+        const executeBtn = document.getElementById("executeBtn");
+        executeBtn.onclick = async function() {
+            await self.executeChanges();
+        }
+    }
+
+    async executeChanges() {
+        console.log("notesWithoutFreq:");
+        console.dir(this.notesWithoutFreq);
+        console.log("notesWithChanges");
+        console.dir(this.notesWithChanges);
+
+        const notesToChange = [];
+        for (let i=0; i<1; i++) {
+            notesToChange.push(this.notesWithoutFreq[i]);
+        }
+        notesToChange.push(this.notesWithChanges[0]);
+
+        let tableHtml = "<table><tbody><tr class='trHeader'>" +
+            "<td>Front</td>" +
+            "<td>NoteId</td>" +
+            "<td>FrequencyNew</td>" +
+            "<td>FrequencyOld</td>" +
+            "</tr>";
+
+        const actions = [];
+        for (const note of notesToChange) {
+            const front = note.fields.Front.value;
+            let freqOld = note.fields.FrequencyInnocent.value;
+            freqOld = freqOld.replaceAll("&","&amp;").replaceAll("<","&lt;");
+            const freqNew = innocent_terms_complete[front];
+            const id = note.noteId;
+
+            const fields = {
+                "FrequencyInnocent": freqNew.toString()
+            };
+            //fields[this.frequencyFieldName] = freqNew.toString();
+            const noteParam = {
+                "note": {
+                    "id": id,
+                    "fields": fields
+                }
+            }
+            actions.push({
+                "action": "updateNoteFields",
+                "params": noteParam
+            });
+            tableHtml += `<tr><td><div>${front}</div></td>` +
+                `<td><div>${id}</div></td>` +
+                `<td><div>${freqNew}</div></td>` +
+                `<td><div>${freqOld}</div></td>` +
+                "</tr>"
+        }
+        tableHtml += "</trbody></table>";
+        const totalUpdated = notesToChange.length;
+        this.updatedBoxHeader.innerText = `Updated: (${totalUpdated} total)`;
+        this.updatedBox.innerHTML = tableHtml;
+        if (totalUpdated > 0) {
+            this.updatedBox.classList.add("filled");
+        } else {
+            this.updatedBox.classList.remove("filled");
+        }
+        const params = {
+            "actions": actions
+        };
+        console.log("params being sent to AnkiConnect: ");
+        console.dir(params);
+        this.responseBox.innerText = JSON.stringify(params, null, 1);
+        this.responseBox.classList.add("filled");
+        // TODO currently apparently unsafe: deleted all other fields in my test note
+        //   not sure why this happens, in AnkiConnect's python code
+        //   it should only overwrite the field if it's given in the request.
+        // const response = await this.apiRequest("multi", params);
+        // console.log("response: ");
+        // console.dir(response);
+        // this.responseBox.innerText = JSON.stringify(response);
+        // this.responseBox.classList.add("filled");
     }
 
     async connectClick() {
@@ -49,7 +129,6 @@ class FrequencyInserter {
         let noChangesNotes = [];
         this.notesWithChanges = [];
         this.notesWithoutFreq = [];
-        let totalNotesWithFrequencyExisting = 0;
         let noFreqFoundCount = 0;
         const correctFrequencyRegex = /^[0-9]+$/;
         let tableHtmlNew = "<table><tbody><tr class='trHeader'><td><div>Front</div></td><td><div>Frequency</div></td></tr>";
@@ -67,7 +146,6 @@ class FrequencyInserter {
                 console.dir(note);
                 continue;
             }
-            totalNotesWithFrequencyExisting++;
 
             const freqExisting = fields[this.frequencyFieldName].value;
             let front = fields.Front.value;
@@ -88,18 +166,13 @@ class FrequencyInserter {
                     let freqOld = fields.FrequencyInnocent.value;
                     // escape html
                     freqOld = freqOld.replaceAll("&","&amp;").replaceAll("<","&lt;");
-                    const noteToChange = {
-                        front: front,
-                        freqOld: freqOld,
-                        freqNew: freqInnocent
-                    };
                     tableHtmlChanges += "<tr>" +
                         `<td>${front}</td>` +
-                        `<td>${noteToChange.freqNew}</td>` +
-                        `<td>${noteToChange.freqOld}</td>` +
+                        `<td>${freqInnocent}</td>` +
+                        `<td>${freqOld}</td>` +
                         "</tr>";
                     
-                    this.notesWithChanges.push(noteToChange);
+                    this.notesWithChanges.push(note);
                 }
             }
         }
