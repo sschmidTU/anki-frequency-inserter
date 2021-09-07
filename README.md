@@ -14,10 +14,12 @@ This will show you which notes the script will update, after you **click 'Execut
 
 **The frequency field in your Anki notes should be called `FrequencyInnocent`**,<br>
 otherwise go into the console and change `ankiInserter.ankiFrequencyFieldName` and `ankiInserter.ankiSearchQuery`.<br>
-You can also set `ankiInserter.ankiQueryAddition` e.g. to `Front:私` to limit the updates or for safety testing.<br>
+You can also set `ankiInserter.ankiQueryAddition` e.g. to `Front:私` to limit what cards are updated (e.g. for testing).<br>
 
-This script should be very safe though, it only updates the frequency field.<br>
-**Still, even though this script is safe, please back up your Anki collection via File -> Export beforehand. It's good practice anyways.** Use the script at your own risk.
+## Disclaimer
+
+This script should be very safe, it only updates the frequency field.<br>
+**Still, even though this script is safe, please back up your Anki collection via File -> Export beforehand. It's good practice anyways.** Use the script at your own risk, i will not be responsible for changes to your Anki decks.
 
 ## Technical information
 AnkiConnect API see [here](https://github.com/FooSoft/anki-connect) or [here (in color)](https://foosoft.net/projects/anki-connect/).<br>
