@@ -1,8 +1,9 @@
 class FrequencyInserter {
     ankiConnectVersion = 6;
-    frequencyFieldName = "FrequencyInnocent";
+    ankiFrequencyFieldName = "FrequencyInnocent";
+    ankiSearchQuery = `${this.ankiFrequencyFieldName}:*`; // can be modified by user. take care to update frequencyFieldName if necessary though
+    ankiQueryAddition = ""; // extends the anki query, e.g. this could be "deck:MyJPDeck".
     ankiConnectUrl = "http://localhost:8765";
-    ankiQueryAddition = ""; // modifies the anki query, e.g. this could be "deck:MyJPDeck".
     notesWithChanges = [];
     notesNoChanges = [];
     notesWithoutFreq = [];
@@ -51,12 +52,6 @@ class FrequencyInserter {
         console.log("notesWithChanges");
         console.dir(this.notesWithChanges);
 
-        const notesToChange = [];
-        for (let i=0; i<1; i++) {
-            notesToChange.push(this.notesWithoutFreq[i]);
-        }
-        notesToChange.push(this.notesWithChanges[0]);
-
         let tableHtml = "<table><tbody><tr class='trHeader'>" +
             "<td>Front</td>" +
             "<td>NoteId</td>" +
@@ -65,35 +60,10 @@ class FrequencyInserter {
             "</tr>";
 
         const actions = [];
-        for (const note of notesToChange) {
-            const front = note.fields.Front.value;
-            let freqOld = note.fields.FrequencyInnocent.value;
-            freqOld = freqOld.replaceAll("&","&amp;").replaceAll("<","&lt;");
-            const freqNew = innocent_terms_complete[front];
-            const id = note.noteId;
-
-            const fields = {
-                "FrequencyInnocent": freqNew.toString()
-            };
-            //fields[this.frequencyFieldName] = freqNew.toString();
-            const noteParam = {
-                "note": {
-                    "id": id,
-                    "fields": fields
-                }
-            }
-            actions.push({
-                "action": "updateNoteFields",
-                "params": noteParam
-            });
-            tableHtml += `<tr><td><div>${front}</div></td>` +
-                `<td><div>${id}</div></td>` +
-                `<td><div>${freqNew}</div></td>` +
-                `<td><div>${freqOld}</div></td>` +
-                "</tr>"
-        }
+        this.notesWithChanges.forEach((note) => tableHtml += this.addActionFromNote(note, actions));
+        this.notesWithoutFreq.forEach((note) => tableHtml += this.addActionFromNote(note, actions));
         tableHtml += "</trbody></table>";
-        const totalUpdated = notesToChange.length;
+        const totalUpdated = actions.length;
         this.updatedBoxHeader.innerText = `Updated: (${totalUpdated} total)`;
         this.updatedBox.innerHTML = tableHtml;
         if (totalUpdated > 0) {
@@ -106,23 +76,59 @@ class FrequencyInserter {
         };
         console.log("params being sent to AnkiConnect: ");
         console.dir(params);
-        this.responseBox.innerText = JSON.stringify(params, null, 1);
+        //this.responseBox.innerText = JSON.stringify(params, null, 1);
         this.responseBox.classList.add("filled");
-        // TODO currently apparently unsafe: deleted all other fields in my test note
-        //   not sure why this happens, in AnkiConnect's python code
-        //   it should only overwrite the field if it's given in the request.
-        // const response = await this.apiRequest("multi", params);
-        // console.log("response: ");
-        // console.dir(response);
-        // this.responseBox.innerText = JSON.stringify(response);
-        // this.responseBox.classList.add("filled");
+        const response = await this.apiRequest("multi", params);
+        console.log("response: ");
+        console.dir(response);
+        this.responseBox.innerText = JSON.stringify(response, null, 1); // 1: beautify
+        this.responseBox.classList.add("filled");
+    }
+
+    addActionFromNote(note, actions) {
+        const front = note.fields.Front.value;
+        const freqNew = innocent_terms_complete[front];
+        let freqOld = note.fields.FrequencyInnocent.value;
+        freqOld = freqOld.replaceAll("&","&amp;").replaceAll("<","&lt;");
+        const id = note.noteId;
+
+        const fields = {
+            "FrequencyInnocent": freqNew.toString() // without toString API gives error (int)
+        };
+        const noteParam = {
+            "note": {
+                "id": id,
+                "fields": fields
+            }
+        }
+        actions.push({
+            "action": "updateNoteFields",
+            "params": noteParam
+        });
+        return `<tr><td><div>${front}</div></td>` +
+            `<td><div>${id}</div></td>` +
+            `<td><div>${freqNew}</div></td>` +
+            `<td><div>${freqOld}</div></td>` +
+            "</tr>";
     }
 
     async connectClick() {
-        // TODO send requestPermission call
-        const noteIds = await this.findNotes(`${this.ankiQueryAddition.trim()} ${this.frequencyFieldName}:*`);
+        const response = await this.apiRequest("requestPermission");
+        this.responseBox.innerText = JSON.stringify(response, null, 1);
+        this.responseBox.classList.remove("filled"); // keep the box small. not an error.
+
+        if (response?.result?.permission !== "granted") {
+            this.responseBox.innerText = "AnkiConnect permission denied after requestPermission request was sent.\n" +
+            "Did you deny permission in Anki? Please try again.\n" +
+            "Otherwise, you can also go to Tools -> Addons -> AnkiConnect->Config and add" +
+            "https://sschmidtu.github.io/ to webCorsOriginList."
+            this.responseBox.classList.add("filled");
+            return;
+        }
+        console.log("AnkiConnect permission granted. Finding notes.");
+        const noteIds = await this.findNotes(`${this.ankiSearchQuery} ${this.ankiQueryAddition}`);
         const notes = await this.notesInfo(noteIds);
-        console.log("total notes found: " + notes.length);
+        console.log("Total notes found: " + notes.length);
         this.processNotes(notes);
     }
 
@@ -148,7 +154,7 @@ class FrequencyInserter {
                 continue;
             }
 
-            const freqExisting = fields[this.frequencyFieldName].value;
+            const freqExisting = fields[this.ankiFrequencyFieldName].value;
             let front = fields.Front.value;
             const freqInnocent = innocent_terms_complete[front];
             if (!(freqInnocent >= 0)) {
