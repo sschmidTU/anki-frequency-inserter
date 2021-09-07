@@ -415,6 +415,6 @@ pre code:not(.language-r) {
   margin-bottom: 1em;
 }
 
-.logbox.filled {
+.logbox.expand {
   height: 200px;
 }

@@ -9,7 +9,7 @@ class FrequencyInserter {
     notesNoChanges = [];
     notesWithoutFreq = [];
     // HTML stuff
-    infoBox; // TODO show message when no cards with FrequencyInnocent field were found
+    infoBox;
     freqNewBox;
     freqNewBoxHeader;
     changesBox;
@@ -79,9 +79,9 @@ class FrequencyInserter {
         this.updatedBoxHeader.innerText = `Updated: (${totalUpdated} total)`;
         this.updatedBox.innerHTML = tableHtml;
         if (totalUpdated > 0) {
-            this.updatedBox.classList.add("filled");
+            this.updatedBox.classList.add("expand");
         } else {
-            this.updatedBox.classList.remove("filled");
+            this.updatedBox.classList.remove("expand");
         }
         const params = {
             "actions": actions
@@ -96,10 +96,10 @@ class FrequencyInserter {
         this.infoBox.innerText = "Your changes were successfully sent to AnkiConnect!\n" +
             "You can now open the Browse window again and test a few of the changes.\n\n" +
             "You can also click 'Connect to AnkiConnect' again to re-check your cards.";
-        this.infoBox.classList.add("filled");
+        this.infoBox.classList.add("expand");
         // this.infoBox.innerText = 'AnkiConnect Response ("null" is good!):\n' +
         //     JSON.stringify(response, null, 1); // 1: beautify
-        // this.infoBox.classList.add("filled");
+        // this.infoBox.classList.add("expand");
     }
 
     addActionFromNote(note, actions) {
@@ -134,16 +134,16 @@ class FrequencyInserter {
         console.log("AnkiConnect Response to requestPermission:");
         console.dir(response);
         this.infoBox.innerText = "Review the changes below and click 'Update cards' to execute them.";
-        this.infoBox.classList.remove("filled");
+        this.infoBox.classList.remove("expand");
         // this.infoBox.innerText = "AnkiConnect Response:\n" + JSON.stringify(response, null, 1);
-        // this.infoBox.classList.remove("filled"); // keep the box small. not an error.
+        // this.infoBox.classList.remove("expand"); // keep the box small. not an error.
 
         if (response?.result?.permission !== "granted") {
             this.infoBox.innerText = "AnkiConnect permission denied after requestPermission request was sent.\n" +
             "Did you deny permission in Anki? Please try again.\n" +
             "Otherwise, you can also go to Tools -> Addons -> AnkiConnect->Config and add" +
             "https://sschmidtu.github.io/ to webCorsOriginList."
-            this.infoBox.classList.add("filled");
+            this.infoBox.classList.add("expand");
             this.connectPermissionGranted = false;
             return;
         }
@@ -229,9 +229,9 @@ class FrequencyInserter {
             `(${freqNewlyAddedCount} total)`;
         if (freqNewlyAddedCount > 0) {
             this.freqNewBox.innerHTML = tableHtmlNew;
-            this.freqNewBox.classList.add("filled");
+            this.freqNewBox.classList.add("expand");
         } else {
-            this.freqNewBox.classList.remove("filled");
+            this.freqNewBox.classList.remove("expand");
         }
 
         const noChangesCount = noChangesNotes.length;
@@ -239,9 +239,9 @@ class FrequencyInserter {
             `(${noChangesCount} total)`;
         if (noChangesCount > 0) {
             noChangesBox.innerHTML = tableHtmlNoChanges;
-            this.noChangesBox.classList.add("filled");
+            this.noChangesBox.classList.add("expand");
         } else {
-            this.noChangesBox.classList.remove("filled");
+            this.noChangesBox.classList.remove("expand");
         }
 
         const changesCount = this.notesWithChanges.length;
@@ -249,18 +249,18 @@ class FrequencyInserter {
             `(${changesCount} total)`;
         if (changesCount > 0) {
             this.changesBox.innerHTML = tableHtmlChanges;
-            this.changesBox.classList.add("filled");
+            this.changesBox.classList.add("expand");
         } else {
-            this.changesBox.classList.remove("filled");
+            this.changesBox.classList.remove("expand");
         }
 
         this.noFreqFoundBoxHeader.innerText = "Notes where no frequency was found in InnocentCorpus: " +
             `(${noFreqFoundCount} total)`;
         if (noFreqFoundCount > 0) {
             this.noFreqFoundBox.innerHTML = tableHtmlNoFreqFound;
-            this.noFreqFoundBox.classList.add("filled");
+            this.noFreqFoundBox.classList.add("expand");
         } else {
-            this.noFreqFoundBox.classList.remove("filled");
+            this.noFreqFoundBox.classList.remove("expand");
         }
     }
 
@@ -273,7 +273,7 @@ class FrequencyInserter {
         const response = await this.apiRequest("notesInfo", {"notes": noteIds});
         // TODO add checkbox to toggle displaying this
         //this.responseBox.innerText = JSON.stringify(response.result, null, 2);
-        //this.responseBox.classList.add("filled");
+        //this.responseBox.classList.add("expand");
         return response.result;
     }
 
@@ -291,7 +291,7 @@ class FrequencyInserter {
             xhr.addEventListener('error', () => {
                 self.infoBox.innerText = "Connection to AnkiConnect failed. Have you started Anki?" +
                     "\n Also, have you installed the addon AnkiConnect? See Usage information above.";
-                self.infoBox.classList.remove("filled"); // rename class to expanded?
+                self.infoBox.classList.remove("expand"); // rename class to expanded?
                 reject('failed to issue request');
             });
             xhr.addEventListener('load', () => {
