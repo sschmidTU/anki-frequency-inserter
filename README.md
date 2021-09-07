@@ -18,7 +18,7 @@ You can also set `ankiInserter.ankiQueryAddition` e.g. to `Front:私` to limit w
 
 ## Disclaimer
 
-This script should be very safe, it only updates the frequency field.<br>
+This script should be very safe, it only updates the frequency field of notes (cards), if it already exists.<br>
 **Still, even though this script is safe, please back up your Anki collection via File -> Export beforehand. It's good practice anyways.** Use the script at your own risk, i will not be responsible for changes to your Anki decks.
 
 ## Technical information
