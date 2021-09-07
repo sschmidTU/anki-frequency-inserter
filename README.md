@@ -15,7 +15,8 @@ This will show you which notes the script will update, after you **click 'Execut
 ## Requirements
 * The Anki addon [AnkiConnect](https://ankiweb.net/shared/info/2055492159) needs to be installed (which should already be the case if you use [Yomichan](https://foosoft.net/projects/yomichan/)).
 * Anki needs to be running.
-* **The Anki browse window should be closed**, as tempting as it is to check the changes immediately. I've heard that this can cause issues.
+* **The Anki browse window should be closed**, as tempting as it is to check the changes immediately.
+I think the worst that can happen is that the currently opened card will not be updated. I tested this with ~900 changes and the rest was fine.
 * **Your notes need to have a field *FrequencyInnocent***<br>
 If your notes don't have that field yet, you can add it in Anki via Tools -> Manage Note Types -> Fields.<br>
 *Note that if you use Sync in Anki, adding a field to your notes requires a full upload to AnkiWeb for the next Sync.*
