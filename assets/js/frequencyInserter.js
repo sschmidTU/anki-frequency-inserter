@@ -88,15 +88,18 @@ class FrequencyInserter {
         };
         console.log("params being sent to AnkiConnect: ");
         console.dir(params);
-        //this.responseBox.innerText = JSON.stringify(params, null, 1);
-        this.infoBox.classList.add("filled");
 
         const response = await this.apiRequest("multi", params);
-        console.log("response: ");
+        console.log("AnkiConnect response to updating cards: ");
         console.dir(response);
-        this.infoBox.innerText = 'AnkiConnect Response ("null" is good!):\n' +
-            JSON.stringify(response, null, 1); // 1: beautify
+
+        this.infoBox.innerText = "Your changes were successfully sent to AnkiConnect!\n" +
+            "You can now open the Browse window again and test a few of the changes.\n\n" +
+            "You can also click 'Connect to AnkiConnect' again to re-check your cards.";
         this.infoBox.classList.add("filled");
+        // this.infoBox.innerText = 'AnkiConnect Response ("null" is good!):\n' +
+        //     JSON.stringify(response, null, 1); // 1: beautify
+        // this.infoBox.classList.add("filled");
     }
 
     addActionFromNote(note, actions) {
@@ -128,8 +131,12 @@ class FrequencyInserter {
 
     async connectClick() {
         const response = await this.apiRequest("requestPermission");
-        this.infoBox.innerText = "AnkiConnect Response:\n" + JSON.stringify(response, null, 1);
-        this.infoBox.classList.remove("filled"); // keep the box small. not an error.
+        console.log("AnkiConnect Response to requestPermission:");
+        console.dir(response);
+        this.infoBox.innerText = "Review the changes below and click 'Update cards' to execute them.";
+        this.infoBox.classList.remove("filled");
+        // this.infoBox.innerText = "AnkiConnect Response:\n" + JSON.stringify(response, null, 1);
+        // this.infoBox.classList.remove("filled"); // keep the box small. not an error.
 
         if (response?.result?.permission !== "granted") {
             this.infoBox.innerText = "AnkiConnect permission denied after requestPermission request was sent.\n" +
