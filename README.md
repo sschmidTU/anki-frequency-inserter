@@ -4,7 +4,7 @@ Inserts Japanese word frequencies into your [Anki](https://apps.ankiweb.net/) fl
 Live here: https://sschmidtu.github.io/anki-frequency-inserter/
 
 ![image](https://user-images.githubusercontent.com/33069673/132389861-aeccf31a-6040-450c-a962-b905f866538e.png)
-[Bigger screenshot without UI elements cut out](https://user-images.githubusercontent.com/33069673/132140807-6a817ef8-d402-4826-9564-1947b5df50b1.png)
+(some UI elements were cut out of the screenshot for simplicity)
 
 ## Usage
 
