@@ -3,7 +3,7 @@ Inserts Japanese word frequencies into your Anki notes/cards from the [InnocentC
 
 Live here: https://sschmidtu.github.io/anki-frequency-inserter/
 
-![image](https://user-images.githubusercontent.com/33069673/132144055-5148a73e-eeae-4466-9b20-fb1076d0edb5.png)
+![image](https://user-images.githubusercontent.com/33069673/132389861-aeccf31a-6040-450c-a962-b905f866538e.png)
 [Bigger screenshot without UI elements cut out](https://user-images.githubusercontent.com/33069673/132140807-6a817ef8-d402-4826-9564-1947b5df50b1.png)
 
 ## Usage
