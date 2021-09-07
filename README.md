@@ -26,6 +26,30 @@ You can also set `ankiInserter.ankiQueryAddition` e.g. to `Front:私` to limit w
 This script should be very safe, it only updates the frequency field of notes (cards), if it already exists.<br>
 **Still, even though this script is safe, please back up your Anki collection via File -> Export beforehand. It's good practice anyways.** Use the script at your own risk, i will not be responsible for changes to your Anki decks.
 
+## Using this to sort/search your Anki cards by frequency in *Browse*
+
+You can either use another addon like [Advanced Browser](https://ankiweb.net/shared/info/874215009) to be able to sort by custom fields:
+![image](https://user-images.githubusercontent.com/33069673/132285260-3723586f-44a9-4095-8b13-e4e0318c9f53.png)
+
+Or if you just want to search without sorting or addons, you can use a query like `deck:Yomichan FrequencyInnocent:9___` (3 underscores) which will find all cards with frequency 9xxx. (Or for frequency >10k: `_____*` (5 underscores + `*` wildcard)
+
+To learn the most frequent words first, what i do is select some cards -> right click -> Reschedule -> place in review queue (0/0).<br>
+*There's probably a smarter way, since this makes the first interval 3 days for me, so i have to mark it 'Again' on the first review*
+
+## The problem with Yomichan's frequency export
+
+First of all, [Yomichan](https://foosoft.net/projects/yomichan/) is great, and i'm very thankful for it. It can show word definitions and export them to Anki cards in the browser.<br>
+It can also insert frequencies into your Anki card while exporting, but it'll use some ugly HTML, making sorting difficult.<br>
+Also, it can't batch edit frequencies into many existing Anki cards at once like this website can do.
+![image](https://user-images.githubusercontent.com/33069673/132285597-ab08045f-415a-4707-97a7-cb938cafc3b2.png)
+
+Clicking on + and using the template `{frequencies}` leads to this:
+
+![image](https://user-images.githubusercontent.com/33069673/132285638-33da5509-5cc1-4540-bb98-37848128a6bb.png)
+
+Editing that manually for hundreds of cards is a hassle. That's why i made this script/website.
+
+
 ## Technical information
 AnkiConnect API see [here](https://github.com/FooSoft/anki-connect) or [here (in color)](https://foosoft.net/projects/anki-connect/).<br>
 The only action this script uses that can change your cards/notes is `updateNoteFields` (technically, also `multi`, which here includes multiple `updateNoteFields` requests). And it only changes the field that's contained in the request, namely the frequency field.
