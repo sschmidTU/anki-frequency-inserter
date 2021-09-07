@@ -13,7 +13,7 @@ Have Anki running and the [AnkiConnect Addon](https://ankiweb.net/shared/info/20
 This will show you which notes the script will update, after you **click 'Execute changes'**.
 
 ## Requirements
-* [The Anki addon AnkiConnect](https://ankiweb.net/shared/info/2055492159) needs to be installed (which should already be the case if you use Yomichan).
+* [The Anki addon AnkiConnect](https://ankiweb.net/shared/info/2055492159) needs to be installed (which should already be the case if you use [Yomichan](https://foosoft.net/projects/yomichan/)).
 * Anki needs to be running.
 * **Your notes need to have a field *FrequencyInnocent***<br>
 If your notes don't have that field yet, you can add it in Anki via Tools -> Manage Note Types -> Fields.
