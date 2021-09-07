@@ -4,11 +4,12 @@ class FrequencyInserter {
     ankiSearchQuery = `${this.ankiFrequencyFieldName}:*`; // can be modified by user. take care to update frequencyFieldName if necessary though
     ankiQueryAddition = ""; // extends the anki query, e.g. this could be "deck:MyJPDeck".
     ankiConnectUrl = "http://localhost:8765";
+    connectPermissionGranted = false;
     notesWithChanges = [];
     notesNoChanges = [];
     notesWithoutFreq = [];
     // HTML stuff
-    responseBox;
+    infoBox; // TODO show message when no cards with FrequencyInnocent field were found
     freqNewBox;
     freqNewBoxHeader;
     changesBox;
@@ -23,8 +24,9 @@ class FrequencyInserter {
     FrequencyInserter() {}
 
     setupHtmlElements() {
-        const self = this;
-        this.responseBox = document.getElementById("ankiConnectResponseBox");
+        this.infoBox = document.getElementById("infoBox");
+        this.infoBox.innerHTML = "Please click <i>Connect to AnkiConnect</i>. Don't worry, it doesn't change your cards yet.<br>" +
+            "Please accept the connection in Anki after clicking.";
         this.freqNewBox = document.getElementById("notesFreqNewBox");
         this.freqNewBoxHeader = document.getElementById("notesFreqNewBoxHeader");
         this.changesBox = document.getElementById("changesBox");
@@ -35,6 +37,7 @@ class FrequencyInserter {
         this.noChangesBoxHeader = document.getElementById("noChangesBoxHeader");
         this.updatedBox = document.getElementById("updatedBox");
         this.updatedBoxHeader = document.getElementById("updatedBoxHeader");
+        const self = this;
         const connectBtn = document.getElementById("connectBtn");
         connectBtn.onclick = async function() {
             await self.connectClick();
@@ -42,6 +45,15 @@ class FrequencyInserter {
         };
         const executeBtn = document.getElementById("executeBtn");
         executeBtn.onclick = async function() {
+            if (!self.connectPermissionGranted) {
+                self.infoBox.innerText = "Please connect to AnkiConnect first :)";
+                return;
+            }
+            if (self.notesWithChanges.length === 0 && self.notesWithoutFreq.length === 0) {
+                self.infoBox.innerText = `There were no notes with a "${self.ankiFrequencyFieldName}" field name found that need changes.\n` +
+                    "Maybe you need to add the field to your note types, see Usage information above.";
+                return;
+            }
             await self.executeChanges();
         }
     }
@@ -77,12 +89,13 @@ class FrequencyInserter {
         console.log("params being sent to AnkiConnect: ");
         console.dir(params);
         //this.responseBox.innerText = JSON.stringify(params, null, 1);
-        this.responseBox.classList.add("filled");
+        this.infoBox.classList.add("filled");
+
         const response = await this.apiRequest("multi", params);
         console.log("response: ");
         console.dir(response);
-        this.responseBox.innerText = JSON.stringify(response, null, 1); // 1: beautify
-        this.responseBox.classList.add("filled");
+        this.infoBox.innerText = "AnkiConnect Response:\n" + JSON.stringify(response, null, 1); // 1: beautify
+        this.infoBox.classList.add("filled");
     }
 
     addActionFromNote(note, actions) {
@@ -114,22 +127,36 @@ class FrequencyInserter {
 
     async connectClick() {
         const response = await this.apiRequest("requestPermission");
-        this.responseBox.innerText = JSON.stringify(response, null, 1);
-        this.responseBox.classList.remove("filled"); // keep the box small. not an error.
+        this.infoBox.innerText = "AnkiConnect Response:\n" + JSON.stringify(response, null, 1);
+        this.infoBox.classList.remove("filled"); // keep the box small. not an error.
 
         if (response?.result?.permission !== "granted") {
-            this.responseBox.innerText = "AnkiConnect permission denied after requestPermission request was sent.\n" +
+            this.infoBox.innerText = "AnkiConnect permission denied after requestPermission request was sent.\n" +
             "Did you deny permission in Anki? Please try again.\n" +
             "Otherwise, you can also go to Tools -> Addons -> AnkiConnect->Config and add" +
             "https://sschmidtu.github.io/ to webCorsOriginList."
-            this.responseBox.classList.add("filled");
+            this.infoBox.classList.add("filled");
+            this.connectPermissionGranted = false;
             return;
         }
+        this.connectPermissionGranted = true;
         console.log("AnkiConnect permission granted. Finding notes.");
+        this.clearResultsBoxes();
         const noteIds = await this.findNotes(`${this.ankiSearchQuery} ${this.ankiQueryAddition}`);
         const notes = await this.notesInfo(noteIds);
         console.log("Total notes found: " + notes.length);
         this.processNotes(notes);
+        if (!this.ankiSearchQuery.includes(this.ankiFrequencyFieldName)) {
+            this.infoBox.innerText = "Warning: ankiInserter.ankiSearchQuery doesn't include ankiInserter.ankiFrequencyFieldName.\n" +
+            "You probably forgot to adjust the query :)\n" + this.infoBox.innerText;
+        }
+    }
+
+    clearResultsBoxes() {
+        this.changesBox.innerHTML = "";
+        this.noFreqFoundBox.innerHTML = "";
+        this.freqNewBox.innerHTML = "";
+        this.noChangesBox.innerHTML = "";
     }
 
     processNotes(notes) {
@@ -242,9 +269,9 @@ class FrequencyInserter {
         return response.result;
     }
 
-    /** Sends an API request to AnkiConnect via REST (Post).
+    /** Sends an HTTPRequest (Post) to the AnkiConnect API.
      * 
-     * @param {*} action The action, e.g. 'createDeck'
+     * @param {*} action The action, e.g. 'createDeck', 'multi', or 'updateNoteFields'
      * @param {*} version AnkiConnect version used
      * @param {*} params action parameters
      * @returns 
@@ -254,8 +281,9 @@ class FrequencyInserter {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             xhr.addEventListener('error', () => {
-                self.responseBox.innerText = "Connection to AnkiConnect failed. Have you started Anki?" +
+                self.infoBox.innerText = "Connection to AnkiConnect failed. Have you started Anki?" +
                     "\n Also, have you installed the addon AnkiConnect? See Usage information above.";
+                self.infoBox.classList.remove("filled"); // rename class to expanded?
                 reject('failed to issue request');
             });
             xhr.addEventListener('load', () => {
@@ -291,6 +319,7 @@ class FrequencyInserter {
     // }
 }
 
+// this is like $(document).ready with jquery
 document.addEventListener("DOMContentLoaded", function(event) { 
     const inserter = new FrequencyInserter();
     inserter.setupHtmlElements();
