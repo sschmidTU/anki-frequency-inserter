@@ -1,6 +1,8 @@
 # Anki Frequency Inserter
 Inserts Japanese word frequencies from the InnocentCorpus into your Anki notes/cards.
 
+Live here: https://sschmidtu.github.io/anki-frequency-inserter/
+
 ![image](https://user-images.githubusercontent.com/33069673/132144055-5148a73e-eeae-4466-9b20-fb1076d0edb5.png)
 [Bigger screenshot without UI elements cut out](https://user-images.githubusercontent.com/33069673/132140807-6a817ef8-d402-4826-9564-1947b5df50b1.png)
 
