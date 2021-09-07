@@ -12,9 +12,14 @@ Have Anki running and the [AnkiConnect Addon](https://ankiweb.net/shared/info/20
 **Just click 'Connect to AnkiConnect' (which won't do any changes yet)**, and accept the connection in Anki.<br>
 This will show you which notes the script will update, after you **click 'Execute changes'**.
 
-**The frequency field in your Anki notes should be called `FrequencyInnocent`**,<br>
-otherwise go into the console and change `ankiInserter.ankiFrequencyFieldName` and `ankiInserter.ankiSearchQuery`.<br>
-You can also set `ankiInserter.ankiQueryAddition` e.g. to `Front:私` to limit what cards are updated (e.g. for testing).<br>
+## Requirements
+* [The Anki addon AnkiConnect](https://ankiweb.net/shared/info/2055492159) needs to be installed (which should already be the case if you use Yomichan).
+* Anki needs to be running.
+* **Your notes need to have a field *FrequencyInnocent***<br>
+If your notes don't have that field yet, you can add it in Anki via Tools -> Manage Note Types -> Fields.
+  * You can change the field name if you're technically minded / can use the browser console:<br>
+Go into the console and change `ankiInserter.ankiFrequencyFieldName`, and `ankiInserter.ankiSearchQuery` accordingly.<br>
+You can also set `ankiInserter.ankiQueryAddition` e.g. to `Front:私` to limit what cards are updated (e.g. for testing).
 
 ## Disclaimer
 
