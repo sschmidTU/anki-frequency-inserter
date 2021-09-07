@@ -17,7 +17,8 @@ This will show you which notes the script will update, after you **click 'Execut
 * Anki needs to be running.
 * **The Anki browse window should be closed**, as tempting as it is to check the changes immediately. I've heard that this can cause issues.
 * **Your notes need to have a field *FrequencyInnocent***<br>
-If your notes don't have that field yet, you can add it in Anki via Tools -> Manage Note Types -> Fields.
+If your notes don't have that field yet, you can add it in Anki via Tools -> Manage Note Types -> Fields.<br>
+*Note that if you use Sync in Anki, adding a field to your notes requires a full upload to AnkiWeb for the next Sync.*
   * You can change the field name if you're technically minded / can use the browser console:<br>
 Go into the console and change `ankiInserter.ankiFrequencyFieldName`, and `ankiInserter.ankiSearchQuery` accordingly.<br>
 You can also set `ankiInserter.ankiQueryAddition` e.g. to `Front:私` to limit what cards are updated (e.g. for testing).
