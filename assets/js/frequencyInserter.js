@@ -246,7 +246,7 @@ class FrequencyInserter {
             this.changesBox.classList.remove("filled");
         }
 
-        this.noFreqFoundBoxHeader.innerText = "Notes where no frequency was found in InnocentCorpus:" +
+        this.noFreqFoundBoxHeader.innerText = "Notes where no frequency was found in InnocentCorpus: " +
             `(${noFreqFoundCount} total)`;
         if (noFreqFoundCount > 0) {
             this.noFreqFoundBox.innerHTML = tableHtmlNoFreqFound;
