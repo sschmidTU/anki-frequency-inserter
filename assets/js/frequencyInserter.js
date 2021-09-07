@@ -43,7 +43,7 @@ class FrequencyInserter {
             await self.connectClick();
             //await self.testEmptyCardsError();
         };
-        const executeBtn = document.getElementById("executeBtn");
+        const executeBtn = document.getElementById("updateCardsBtn");
         executeBtn.onclick = async function() {
             if (!self.connectPermissionGranted) {
                 self.infoBox.innerText = "Please connect to AnkiConnect first :)";
@@ -58,6 +58,7 @@ class FrequencyInserter {
         }
     }
 
+    /** Executes the changes (after a click on 'Update cards') that were found after the 'Connect' click. */
     async executeChanges() {
         console.log("notesWithoutFreq:");
         console.dir(this.notesWithoutFreq);
@@ -93,13 +94,11 @@ class FrequencyInserter {
         console.log("AnkiConnect response to updating cards: ");
         console.dir(response);
 
+        // TODO check response for error
         this.infoBox.innerText = "Your changes were successfully sent to AnkiConnect!\n" +
             "You can now open the Browse window again and test a few of the changes.\n\n" +
             "You can also click 'Connect to AnkiConnect' again to re-check your cards.";
         this.infoBox.classList.add("expand");
-        // this.infoBox.innerText = 'AnkiConnect Response ("null" is good!):\n' +
-        //     JSON.stringify(response, null, 1); // 1: beautify
-        // this.infoBox.classList.add("expand");
     }
 
     addActionFromNote(note, actions) {
@@ -135,8 +134,6 @@ class FrequencyInserter {
         console.dir(response);
         this.infoBox.innerText = "Review the changes below and click 'Update cards' to execute them.";
         this.infoBox.classList.remove("expand");
-        // this.infoBox.innerText = "AnkiConnect Response:\n" + JSON.stringify(response, null, 1);
-        // this.infoBox.classList.remove("expand"); // keep the box small. not an error.
 
         if (response?.result?.permission !== "granted") {
             this.infoBox.innerText = "AnkiConnect permission denied after requestPermission request was sent.\n" +
@@ -158,13 +155,6 @@ class FrequencyInserter {
             this.infoBox.innerText = "Warning: ankiInserter.ankiSearchQuery doesn't include ankiInserter.ankiFrequencyFieldName.\n" +
             "You probably forgot to adjust the query :)\n" + this.infoBox.innerText;
         }
-    }
-
-    clearResultsBoxes() {
-        this.changesBox.innerHTML = "";
-        this.noFreqFoundBox.innerHTML = "";
-        this.freqNewBox.innerHTML = "";
-        this.noChangesBox.innerHTML = "";
     }
 
     processNotes(notes) {
@@ -271,10 +261,7 @@ class FrequencyInserter {
 
     async notesInfo(noteIds) {
         const response = await this.apiRequest("notesInfo", {"notes": noteIds});
-        // TODO add checkbox to toggle displaying this
-        //this.responseBox.innerText = JSON.stringify(response.result, null, 2);
-        //this.responseBox.classList.add("expand");
-        return response.result;
+        return response.result; // list of notes with note.fields etc
     }
 
     /** Sends an HTTPRequest (Post) to the AnkiConnect API.
@@ -291,7 +278,7 @@ class FrequencyInserter {
             xhr.addEventListener('error', () => {
                 self.infoBox.innerText = "Connection to AnkiConnect failed. Have you started Anki?" +
                     "\n Also, have you installed the addon AnkiConnect? See Usage information above.";
-                self.infoBox.classList.remove("expand"); // rename class to expanded?
+                self.infoBox.classList.remove("expand");
                 reject('failed to issue request');
             });
             xhr.addEventListener('load', () => {
@@ -318,6 +305,13 @@ class FrequencyInserter {
             xhr.open('POST', this.ankiConnectUrl);
             xhr.send(JSON.stringify({action, version, params}));
         });
+    }
+
+    clearResultsBoxes() {
+        this.changesBox.innerHTML = "";
+        this.noFreqFoundBox.innerHTML = "";
+        this.freqNewBox.innerHTML = "";
+        this.noChangesBox.innerHTML = "";
     }
 
     // stripHtml(htmlString) {
