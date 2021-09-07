@@ -25,7 +25,10 @@ This script should be very safe, it only updates the frequency field of notes (c
 AnkiConnect API see [here](https://github.com/FooSoft/anki-connect) or [here (in color)](https://foosoft.net/projects/anki-connect/).<br>
 The only action this script uses that can change your cards/notes is `updateNoteFields` (technically, also `multi`, which here includes multiple `updateNoteFields` requests). And it only changes the field that's contained in the request, namely the frequency field.
 
-Locally, due to CORS, this only seems to work when hosted on a (local) server, e.g. with python3:<br>
+Uses [InnocentCorpus](https://foosoft.net/projects/yomichan/), a corpus of 5000+ books, which was bundled into a .js (~4.35MB) in `assets/js`.<br>
+This means that the first visit of the website takes ~4.5MB of bandwidth.
+
+If you want to run this locally, due to CORS, this only seems to work when hosted on a (local) server, e.g. with python3:<br>
 `python -m http.server`<br>
 Here, you may have to add `localhost:8000` to the `webCorsOriginList` in the AnkiConnect config,<br>
 if `requestPermission` fails (happens on clicking 'Connect').
