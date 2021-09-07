@@ -94,7 +94,8 @@ class FrequencyInserter {
         const response = await this.apiRequest("multi", params);
         console.log("response: ");
         console.dir(response);
-        this.infoBox.innerText = "AnkiConnect Response:\n" + JSON.stringify(response, null, 1); // 1: beautify
+        this.infoBox.innerText = 'AnkiConnect Response ("null" is good!):\n' +
+            JSON.stringify(response, null, 1); // 1: beautify
         this.infoBox.classList.add("filled");
     }
 
