@@ -255,7 +255,7 @@ class FrequencyInserter {
             const xhr = new XMLHttpRequest();
             xhr.addEventListener('error', () => {
                 self.responseBox.innerText = "Connection to AnkiConnect failed. Have you started Anki?" +
-                    "\n Also, have you allowed the source (e.g. localhost:8000) in the AnkiConnect config?";
+                    "\n Also, have you installed the addon AnkiConnect? See Usage information above.";
                 reject('failed to issue request');
             });
             xhr.addEventListener('load', () => {
