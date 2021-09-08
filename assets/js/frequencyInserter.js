@@ -8,7 +8,7 @@ class FrequencyInserter {
     notesWithChanges = [];
     notesNoChanges = [];
     notesWithoutFreq = [];
-    // HTML stuff
+    // HTML stuff:
     infoBox;
     freqNewBox;
     freqNewBoxHeader;
