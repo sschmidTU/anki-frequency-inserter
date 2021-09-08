@@ -6,6 +6,12 @@ Live here: https://sschmidtu.github.io/anki-frequency-inserter/
 ![image](https://user-images.githubusercontent.com/33069673/132389861-aeccf31a-6040-450c-a962-b905f866538e.png)
 (some UI elements were cut out of the screenshot for simplicity)
 
+**The frequency number just tells you how often the word occurs** in the corpus of ~5000 books, you'll learn to judge it.<br>
+Anything over 10k is very common, below 100 is rather rare, but can still be useful (私: ~900k, 新聞: ~30k, とろ火: 72).<br>
+
+Also, since the frequencies are purely from books, they aren't universal. You probably won't find internet lingo here.<br>
+I'm open to replacing the frequency corpus or at least offering another corpus additionally.
+
 ## Usage
 
 Have Anki running and the [AnkiConnect Addon](https://ankiweb.net/shared/info/2055492159) installed.<br><br>
