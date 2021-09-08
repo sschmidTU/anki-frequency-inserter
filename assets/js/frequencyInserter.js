@@ -266,9 +266,9 @@ class FrequencyInserter {
 
     /** Sends an HTTPRequest (Post) to the AnkiConnect API.
      * 
-     * @param {*} action The action, e.g. 'createDeck', 'multi', or 'updateNoteFields'
+     * @param {*} action The action, e.g. 'findNotes', 'notesInfo', 'multi', or 'updateNoteFields'
+     * @param {*} params action parameters, e.g. {"notes": listOfNoteIds}
      * @param {*} version AnkiConnect version used
-     * @param {*} params action parameters
      * @returns 
      */
     apiRequest(action, params={}, version=this.ankiConnectVersion) {
