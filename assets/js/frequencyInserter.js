@@ -151,9 +151,13 @@ class FrequencyInserter {
         const notes = await this.notesInfo(noteIds);
         console.log("Total notes found: " + notes.length);
         this.processNotes(notes);
+        if (this.notesWithChanges.length === 0 && this.notesWithoutFreq.length === 0) {
+            this.infoBox.innerText = `There were no notes with a "${this.ankiFrequencyFieldName}" field name found that need changes.\n` +
+                "Maybe you need to add the field to your note types, see Usage information above.";
+        }
         if (!this.ankiSearchQuery.includes(this.ankiFrequencyFieldName)) {
             this.infoBox.innerText = "Warning: ankiInserter.ankiSearchQuery doesn't include ankiInserter.ankiFrequencyFieldName.\n" +
-            "You probably forgot to adjust the query :)\n" + this.infoBox.innerText;
+            "You probably forgot to adjust the query or the frequency field name :)\n" + this.infoBox.innerText;
         }
     }
 
