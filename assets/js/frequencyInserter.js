@@ -183,6 +183,8 @@ class FrequencyInserter {
             let front = fields.Front.value;
             const freqInnocent = innocent_terms_complete[front];
             if (!(freqInnocent >= 0)) {
+                // TODO try stripping the front of HTML and checking again.
+                // const frontStripped = this.stripHtml(front);
                 noFreqFoundCount++;
                 tableHtmlNoFreqFound += "<tr>" +
                     `<td>${front}</td>` +
