@@ -4,6 +4,8 @@ class FrequencyInserter {
     ankiSearchQuery = `${this.ankiFrequencyFieldName}:*`; // can be modified by user. take care to update frequencyFieldName if necessary though
     ankiQueryAddition = ""; // extends the anki query, e.g. this could be "deck:MyJPDeck".
     ankiConnectUrl = "http://localhost:8765";
+    ankiFuriganaFieldName = "Furigana";
+    tryFuriganaFieldAsKey = true;
     connectPermissionGranted = false;
     notesWithChanges = [];
     notesNoChanges = [];
@@ -185,10 +187,16 @@ class FrequencyInserter {
 
             const freqExisting = fields[this.ankiFrequencyFieldName].value;
             let front = fields.Front.value;
-            const freqInnocent = innocent_terms_complete[front];
-            if (!(freqInnocent >= 0)) {
-                // TODO try stripping the front of HTML and checking again.
-                // const frontStripped = this.stripHtml(front);
+            let freqInnocent = innocent_terms_complete[front];
+            const validFrequency = (frequency) => frequency >= 0;
+            const furigana = fields[this.ankiFuriganaFieldName]?.value;
+            if (!validFrequency(freqInnocent) && furigana && this.tryFuriganaFieldAsKey) {
+                const furiganaStripped = furigana.replaceAll(/<rt>.*<\/rt>/g, "").replaceAll(/<\/?ruby>/g, "");
+                freqInnocent = innocent_terms_complete[furiganaStripped];
+            }
+            // TODO try stripping the front of HTML and checking again.
+            // const frontStripped = this.stripHtml(front);
+            if (!validFrequency(freqInnocent)) {
                 noFreqFoundCount++;
                 tableHtmlNoFreqFound += "<tr>" +
                     `<td>${front}</td>` +
