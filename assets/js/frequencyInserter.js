@@ -105,9 +105,11 @@ class FrequencyInserter {
 
     addActionFromNote(note, actions) {
         const front = note.fields.Front.value;
-        let freqNew = innocent_terms_complete[front];
-        if (!(freqNew >= 0)) {
-            freqNew = note.validFrequency; // from furigana
+        let freqNew = note.newFrequency;
+        if (!(note.newFrequency >= 0)) {
+            // shouldn't happen, just testing to make sure
+            console.log(`note ${front} has an invalid frequency found: ${freqNew}. Skipping.`);
+            return;
         }
         let freqOld = note.fields.FrequencyInnocent.value;
         freqOld = freqOld.replaceAll("&","&amp;").replaceAll("<","&lt;");
@@ -196,9 +198,6 @@ class FrequencyInserter {
             if (!validFrequency(freqInnocent) && furigana && this.tryFuriganaFieldAsKey) {
                 const furiganaStripped = furigana.replaceAll(/<rt>.*<\/rt>/g, "").replaceAll(/<\/?ruby>/g, "");
                 freqInnocent = innocent_terms_complete[furiganaStripped];
-                if (validFrequency(freqInnocent)) {
-                    note.validFrequency = freqInnocent;
-                }
             }
             // TODO try stripping the front of HTML and checking again.
             // const frontStripped = this.stripHtml(front);
@@ -207,14 +206,15 @@ class FrequencyInserter {
                 tableHtmlNoFreqFound += "<tr>" +
                     `<td>${front}</td>` +
                     "</tr>";
-            } else if (freqExisting === "") {
-                this.notesWithoutFreq.push(note);
-                tableHtmlNew += `<tr><td><div>${front}</div></td><td><div>${freqInnocent}</div></td></tr>`;
-            } else if (correctFrequencyRegex.test(freqExisting)) {
-                noChangesNotes.push(note);
-                tableHtmlNoChanges += `<tr><div><td>${front}</div></td><td><div>${freqExisting}</div></td></tr>`;
             } else {
-                if (freqInnocent >= 0) {
+                note.newFrequency = freqInnocent;
+                if (freqExisting === "") {
+                    this.notesWithoutFreq.push(note);
+                    tableHtmlNew += `<tr><td><div>${front}</div></td><td><div>${freqInnocent}</div></td></tr>`;
+                } else if (correctFrequencyRegex.test(freqExisting)) {
+                    noChangesNotes.push(note);
+                    tableHtmlNoChanges += `<tr><div><td>${front}</div></td><td><div>${freqExisting}</div></td></tr>`;
+                } else { // old frequency wasn't correct
                     let freqOld = fields.FrequencyInnocent.value;
                     // escape html
                     freqOld = freqOld.replaceAll("&","&amp;").replaceAll("<","&lt;");
@@ -223,11 +223,10 @@ class FrequencyInserter {
                         `<td>${freqInnocent}</td>` +
                         `<td>${freqOld}</td>` +
                         "</tr>";
-                    
                     this.notesWithChanges.push(note);
                 }
             }
-        }
+        } // end for notes
         const tableEnd = "</tbody></table>";
         tableHtmlNoChanges += tableEnd;
         tableHtmlChanges += tableEnd;
