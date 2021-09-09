@@ -106,7 +106,7 @@ class FrequencyInserter {
     addActionFromNote(note, actions) {
         const front = note.fields.Front.value;
         let freqNew = note.newFrequency;
-        if (!(note.newFrequency >= 0)) {
+        if (!(freqNew >= 0)) {
             // shouldn't happen, just testing to make sure
             console.log(`note ${front} has an invalid frequency found: ${freqNew}. Skipping.`);
             return;
