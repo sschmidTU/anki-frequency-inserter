@@ -105,7 +105,10 @@ class FrequencyInserter {
 
     addActionFromNote(note, actions) {
         const front = note.fields.Front.value;
-        const freqNew = innocent_terms_complete[front];
+        let freqNew = innocent_terms_complete[front];
+        if (!(freqNew >= 0)) {
+            freqNew = note.validFrequency; // from furigana
+        }
         let freqOld = note.fields.FrequencyInnocent.value;
         freqOld = freqOld.replaceAll("&","&amp;").replaceAll("<","&lt;");
         const id = note.noteId;
@@ -193,6 +196,9 @@ class FrequencyInserter {
             if (!validFrequency(freqInnocent) && furigana && this.tryFuriganaFieldAsKey) {
                 const furiganaStripped = furigana.replaceAll(/<rt>.*<\/rt>/g, "").replaceAll(/<\/?ruby>/g, "");
                 freqInnocent = innocent_terms_complete[furiganaStripped];
+                if (validFrequency(freqInnocent)) {
+                    note.validFrequency = freqInnocent;
+                }
             }
             // TODO try stripping the front of HTML and checking again.
             // const frontStripped = this.stripHtml(front);
