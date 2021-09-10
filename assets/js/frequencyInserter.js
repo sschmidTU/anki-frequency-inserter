@@ -200,8 +200,13 @@ class FrequencyInserter {
                 const furiganaStripped = furigana.replaceAll(/<rt>.*<\/rt>/g, "").replaceAll(/<\/?ruby>/g, "");
                 freqInnocent = innocent_terms_complete[furiganaStripped];
             }
-            // TODO try stripping the front of HTML and checking again.
-            // const frontStripped = this.stripHtml(front);
+            if (!validFrequency(freqInnocent)) {
+                const frontStripped = this.stripHtml(front);
+                // if (frontStripped !== front) {
+                //     console.log("front that had html: " + frontStripped);
+                // }
+                freqInnocent = innocent_terms_complete[frontStripped];
+            }
             if (!validFrequency(freqInnocent)) {
                 noFreqFoundCount++;
                 tableHtmlNoFreqFound += "<tr>" +
@@ -334,11 +339,11 @@ class FrequencyInserter {
         this.noChangesBox.innerHTML = "";
     }
 
-    // stripHtml(htmlString) {
-    //     let tmp = document.createElement("DIV");
-    //     tmp.innerHTML = htmlString;
-    //     return tmp.textContent || tmp.innerText || "";
-    // }
+    stripHtml(htmlString) {
+        let tmp = document.createElement("div");
+        tmp.innerHTML = htmlString;
+        return tmp.textContent || tmp.innerText || "";
+    }
 }
 
 // this is like $(document).ready with jquery
