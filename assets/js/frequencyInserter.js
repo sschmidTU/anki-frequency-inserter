@@ -70,8 +70,8 @@ class FrequencyInserter {
         let tableHtml = "<table><tbody><tr class='trHeader'>" +
             "<td>Front</td>" +
             "<td>NoteId</td>" +
-            "<td>FrequencyNew</td>" +
-            "<td>FrequencyOld</td>" +
+            "<td>New Frequency</td>" +
+            "<td>Old Frequency</td>" +
             "</tr>";
 
         const actions = [];
@@ -178,8 +178,8 @@ class FrequencyInserter {
         let tableHtmlNoChanges = "<table><tbody><tr class='trHeader'><td>Front</td><td>Frequency</td></tr>";
         let tableHtmlChanges = "<table><tbody><tr class='trHeader'>" +
             "<td>Front</td>" +
-            "<td>FrequencyNew</td>" +
-            "<td>FrequencyOld</td>" +
+            "<td>New Frequency</td>" +
+            "<td>Old Frequency</td>" +
             "</tr>";
         let tableHtmlNoFreqFound = "<table><tbody><tr class='trHeader'><td>Front</td></tr>";
         for (const note of notes) {

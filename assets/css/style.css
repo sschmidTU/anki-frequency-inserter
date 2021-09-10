@@ -329,6 +329,7 @@ th, td {
   padding-bottom: 0.0em;
   overflow: auto;
   border: 1px solid #eee;
+  padding-right: 4px;
 }
 
 .trHeader {
