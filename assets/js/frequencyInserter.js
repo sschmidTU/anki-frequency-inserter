@@ -47,21 +47,22 @@ class FrequencyInserter {
         };
         const executeBtn = document.getElementById("updateCardsBtn");
         executeBtn.onclick = async function() {
-            if (!self.connectPermissionGranted) {
-                self.infoBox.innerText = "Please connect to AnkiConnect first :)";
-                return;
-            }
-            if (self.notesWithChanges.length === 0 && self.notesWithoutFreq.length === 0) {
-                self.infoBox.innerText = `There were no notes with a "${self.ankiFrequencyFieldName}" field name found that need changes.\n` +
-                    "Maybe you need to add the field to your note types, see Usage information above.";
-                return;
-            }
             await self.executeChanges();
         }
     }
 
     /** Executes the changes (after a click on 'Update cards') that were found after the 'Connect' click. */
     async executeChanges() {
+        if (!this.connectPermissionGranted) {
+            this.infoBox.innerText = "Please connect to AnkiConnect first :)";
+            return;
+        }
+        if (this.notesWithChanges.length === 0 && this.notesWithoutFreq.length === 0) {
+            this.infoBox.innerText = `There were no notes with a "${this.ankiFrequencyFieldName}" field name found that need changes.\n` +
+                "Maybe you need to add the field to your note types, see Usage information above.";
+            return;
+        }
+
         console.log("notesWithoutFreq:");
         console.dir(this.notesWithoutFreq);
         console.log("notesWithChanges");
