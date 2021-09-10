@@ -340,7 +340,7 @@ td div {
   resize: none;
   width: auto;
   min-width: 50px;
-  max-width: 350px;
+  max-width: 100px;
   overflow: auto;
   display: block;
   padding-right: 0.2em;
