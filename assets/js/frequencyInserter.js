@@ -100,7 +100,7 @@ class FrequencyInserter {
         this.infoBox.innerText = "Your changes were successfully sent to AnkiConnect!\n" +
             "You can now open the Browse window again and test a few of the changes.\n\n" +
             "You can also click 'Connect to AnkiConnect' again to re-check your cards.";
-        this.infoBox.classList.add("expand");
+        this.infoBox.classList.add("expandInfobox");
     }
 
     addActionFromNote(note, actions) {
@@ -140,14 +140,14 @@ class FrequencyInserter {
         console.log("AnkiConnect Response to requestPermission:");
         console.dir(response);
         this.infoBox.innerText = "Review the changes below and click 'Update cards' to execute them.";
-        this.infoBox.classList.remove("expand");
+        this.infoBox.classList.remove("expandInfobox");
 
         if (response?.result?.permission !== "granted") {
             this.infoBox.innerText = "AnkiConnect permission denied after requestPermission request was sent.\n" +
             "Did you deny permission in Anki? Please try again.\n" +
             "Otherwise, you can also go to Tools -> Addons -> AnkiConnect->Config and add" +
             "https://sschmidtu.github.io/ to webCorsOriginList."
-            this.infoBox.classList.add("expand");
+            this.infoBox.classList.add("expandInfobox");
             this.connectPermissionGranted = false;
             return;
         }
@@ -297,7 +297,7 @@ class FrequencyInserter {
             xhr.addEventListener('error', () => {
                 self.infoBox.innerText = "Connection to AnkiConnect failed. Have you started Anki?" +
                     "\n Also, have you installed the addon AnkiConnect? See Usage information above.";
-                self.infoBox.classList.remove("expand");
+                self.infoBox.classList.remove("expandInfobox");
                 reject('failed to issue request');
             });
             xhr.addEventListener('load', () => {

@@ -428,3 +428,7 @@ pre code:not(.language-r) {
 .logbox.expand {
   height: 200px;
 }
+
+.logbox.expandInfobox {
+  height: 100px; /* infobox needs less height */
+}
