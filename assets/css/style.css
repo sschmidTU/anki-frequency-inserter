@@ -346,8 +346,13 @@ td div {
   padding-right: 0.2em;
 }
 
+/* for tables: <td><div> */
 .longDiv {
   max-width: 250px;
+}
+
+.lastDiv {
+  max-width: 600px;
 }
 
 tr:nth-child(even){background-color: #f5f5f5;}

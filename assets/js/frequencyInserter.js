@@ -131,7 +131,7 @@ class FrequencyInserter {
         return `<tr><td><div>${front}</div></td>` +
             `<td><div class="longDiv">${id}</div></td>` + // without longDiv this gets cramped
             `<td><div>${freqNew}</div></td>` +
-            `<td><div class="longDiv">${freqOld}</div></td>` + // without longDiv this gets cramped
+            `<td><div class="lastDiv">${freqOld}</div></td>` + // without longDiv/lastDiv this gets cramped
             "</tr>";
     }
 
@@ -177,9 +177,9 @@ class FrequencyInserter {
         let tableHtmlNew = "<table><tbody><tr class='trHeader'><td><div>Front</div></td><td><div>Frequency</div></td></tr>";
         let tableHtmlNoChanges = "<table><tbody><tr class='trHeader'><td>Front</td><td>Frequency</td></tr>";
         let tableHtmlChanges = "<table><tbody><tr class='trHeader'>" +
-            "<td>Front</td>" +
-            "<td>New Frequency</td>" +
-            "<td>Old Frequency</td>" +
+            "<td><div>Front</div></td>" +
+            "<td><div>New Frequency</div></td>" +
+            `<td><div class="lastDiv">Old Frequency</div></td>` +
             "</tr>";
         let tableHtmlNoFreqFound = "<table><tbody><tr class='trHeader'><td>Front</td></tr>";
         for (const note of notes) {
