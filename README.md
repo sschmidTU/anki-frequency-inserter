@@ -3,7 +3,7 @@ Inserts Japanese word frequencies into your [Anki](https://apps.ankiweb.net/) fl
 
 Live here: https://sschmidtu.github.io/anki-frequency-inserter/
 
-![image](https://user-images.githubusercontent.com/33069673/132857687-79bf49f6-d68e-474e-bd81-87282607ce60.png)
+![image](https://user-images.githubusercontent.com/33069673/132860267-ddff3b33-4699-42e5-8120-5a4e24f6667d.png)
 (some UI elements were cut out of the screenshot for simplicity)
 
 **The frequency number just tells you how often the word occurs** in the corpus of ~5000 books, you'll learn to judge it.<br>
