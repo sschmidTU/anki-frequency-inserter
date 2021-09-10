@@ -129,9 +129,9 @@ class FrequencyInserter {
             "params": noteParam
         });
         return `<tr><td><div>${front}</div></td>` +
-            `<td><div>${id}</div></td>` +
+            `<td><div class="longDiv">${id}</div></td>` + // without longDiv this gets cramped
             `<td><div>${freqNew}</div></td>` +
-            `<td><div>${freqOld}</div></td>` +
+            `<td><div class="longDiv">${freqOld}</div></td>` + // without longDiv this gets cramped
             "</tr>";
     }
 
