@@ -140,7 +140,8 @@ class FrequencyInserter {
         const response = await this.apiRequest("requestPermission");
         console.log("AnkiConnect Response to requestPermission:");
         console.dir(response);
-        this.infoBox.innerText = "Review the changes below and click 'Update cards' to execute them.";
+        this.infoBox.innerText = "Review the changes below and click 'Update cards' to execute them.\n" +
+            "(higher frequency = more common, in the InnocentCorpus)";
         this.infoBox.classList.remove("expandInfobox");
 
         if (response?.result?.permission !== "granted") {
