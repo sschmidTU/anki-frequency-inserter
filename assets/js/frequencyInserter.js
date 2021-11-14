@@ -1,10 +1,10 @@
 class FrequencyInserter {
     ankiConnectVersion = 6;
+    ankiConnectUrl = "http://localhost:8765";
     ankiFuriganaFieldName = "Furigana";
     ankiFrequencyFieldName = "FrequencyInnocent";
     ankiSearchQuery = `${this.ankiFrequencyFieldName}:*`; // can be modified by user. take care to update frequencyFieldName if necessary though
     ankiQueryAddition = ""; // extends the anki query, e.g. this could be "deck:MyJPDeck".
-    ankiConnectUrl = "http://localhost:8765";
     tryFuriganaFieldAsKey = true;
     connectPermissionGranted = false;
     notesWithChanges = [];
