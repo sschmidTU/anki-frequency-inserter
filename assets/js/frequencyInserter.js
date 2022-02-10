@@ -303,7 +303,7 @@ class FrequencyInserter {
             const xhr = new XMLHttpRequest();
             xhr.addEventListener('error', () => {
                 self.infoBox.innerText = "Connection to AnkiConnect failed. Have you started Anki?" +
-                    "\n Also, have you installed the addon AnkiConnect? See Usage information above.";
+                "\n Also, have you installed the addon AnkiConnect? See Usage information above.";
                 self.infoBox.classList.remove("expandInfobox");
                 reject('failed to issue request');
             });
@@ -314,11 +314,11 @@ class FrequencyInserter {
                     //     throw 'response has an unexpected number of fields';
                     // }
                     // if (!response.hasOwnProperty('error')) {
-                    //     throw 'response is missing required error field';
-                    // }
-                    // if (!response.hasOwnProperty('result')) {
-                    //     throw 'response is missing required result field';
-                    // }
+                        //     throw 'response is missing required error field';
+                        // }
+                        // if (!response.hasOwnProperty('result')) {
+                            //     throw 'response is missing required result field';
+                            // }
                     if (response.error) {
                         throw response.error;
                     }
@@ -327,8 +327,14 @@ class FrequencyInserter {
                     reject(e);
                 }
             });
-    
+                    
             xhr.open('POST', this.ankiConnectUrl);
+            xhr.setRequestHeader('Access-Control-Allow-Private-Network', true);
+            // if you're running this offline with an URL like file://*, CORS support will be limited.
+            //   if using Chrome, start it with the command parameter --allow-file-access-from-files
+            // xhr.setRequestHeader('Access-Control-Allow-Origin', "*/*");
+            xhr.setRequestHeader('Access-Control-Allow-Origin', "null");
+            // xhr.setRequestHeader('Access-Control-Allow-Headers', 'Accept'); // probably unnecessary
             xhr.send(JSON.stringify({action, version, params}));
         });
     }
