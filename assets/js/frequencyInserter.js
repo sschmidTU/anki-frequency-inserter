@@ -329,9 +329,10 @@ class FrequencyInserter {
             });
                     
             xhr.open('POST', this.ankiConnectUrl);
-            xhr.setRequestHeader('Access-Control-Allow-Private-Network', true);
+            xhr.setRequestHeader('Access-Control-Request-Private-Network', true);
             // if you're running this offline with an URL like file://*, CORS support will be limited.
-            //   if using Chrome, start it with the command parameter --allow-file-access-from-files
+            //   try adding ,"null" to "webCorsOriginList", e.g.: "webCorsOriginList": ["http:localhost", "null"]
+            //   if that doesn't work, if using Chrome, try starting it with the command parameter --allow-file-access-from-files
             // xhr.setRequestHeader('Access-Control-Allow-Origin', "*/*");
             xhr.setRequestHeader('Access-Control-Allow-Origin', "null");
             // xhr.setRequestHeader('Access-Control-Allow-Headers', 'Accept'); // probably unnecessary

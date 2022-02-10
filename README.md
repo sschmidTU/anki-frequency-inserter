@@ -30,6 +30,14 @@ If your notes don't have that field yet, you can add it in Anki via Tools -> Man
 Go into the console and change `ankiInserter.ankiFrequencyFieldName`, and `ankiInserter.ankiSearchQuery` accordingly.<br>
 You can also set `ankiInserter.ankiQueryAddition` e.g. to `Front:私` to limit what cards are updated (e.g. for testing).
 
+## Troubleshooting
+
+* If you're running this offline with a URL like file:// and getting an error like `Access to XMLHttpRequest at 'http://localhost:8765/' from origin 'null' has been blocked by CORS policy`, try this:
+  * In Anki -> Tools -> Addons -> AnkiConnect -> Config, try adding `,"null"` to "webCorsOriginList", e.g.: `"webCorsOriginList": ["http:localhost", "null"]`
+  * if that doesn't work, if using Chrome, try starting it with the command parameter --allow-file-access-from-files
+  * Note that CORS offline support is limited.
+
+
 ## Disclaimer
 
 This script should be very safe, it only updates the frequency field of notes (cards), if it already exists.<br>
