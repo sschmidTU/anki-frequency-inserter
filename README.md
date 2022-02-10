@@ -16,7 +16,9 @@ I'm open to replacing the frequency corpus or at least offering another corpus a
 
 Have Anki running and the [AnkiConnect Addon](https://ankiweb.net/shared/info/2055492159) installed.<br><br>
 **Just click 'Connect to AnkiConnect' (which won't do any changes yet)**, and accept the connection in Anki.<br>
-This will show you which notes the script will update, after you **click 'Execute changes'**.
+This will show you which notes the script will update, after you **click 'Execute changes'**.<br>
+
+**Note that this currently does not work in Chrome online.** If you want to use this in Chrome, you have to download it and run it offline, see Troubleshooting section.
 
 ## Requirements
 * The Anki addon [AnkiConnect](https://ankiweb.net/shared/info/2055492159) needs to be installed (which should already be the case if you use [Yomichan](https://foosoft.net/projects/yomichan/)).
@@ -32,6 +34,10 @@ You can also set `ankiInserter.ankiQueryAddition` e.g. to `Front:私` to limit w
 
 ## Troubleshooting
 
+* **For now this doesn't work in Chrome online due to CORS / Private Network Access changes in Chrome.**
+  * see https://developer.chrome.com/blog/private-network-access-preflight/
+  * It still works offline in Chrome (see below), and online in Firefox and Edge.
+  * A solution to this would be patching AnkiConnect to add a setting in the config to set the `Access-Control-Allow-Private-Network` header to true.
 * If you're running this offline with a URL like file:// and getting an error like `Access to XMLHttpRequest at 'http://localhost:8765/' from origin 'null' has been blocked by CORS policy`, try this:
   * In Anki -> Tools -> Addons -> AnkiConnect -> Config, try adding `,"null"` to "webCorsOriginList", e.g.: `"webCorsOriginList": ["http:localhost", "null"]`
   * if that doesn't work, if using Chrome, try starting it with the command parameter --allow-file-access-from-files
