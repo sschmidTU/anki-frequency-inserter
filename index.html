@@ -26,6 +26,19 @@ Inserts Japanese word frequencies into a preexisting field (<i>FrequencyInnocent
 <a href="https://github.com/sschmidTU/anki-frequency-inserter#anki-frequency-inserter" class="a-blue">Usage information and disclaimer</a></div>
 <hr>
 
+<p title="Options">Options:</p>
+<!--form id="optionsForm"-->
+  <label for="expressionFieldName">Name of expression field:</label>
+    <input type="text" id="expressionFieldName" name="expressionFieldName"><br>
+  <label for="freqFieldName">Name of frequency field:</label>
+    <input type="text" id="freqFieldName" name="freqFieldName"><br>
+  <input type="submit" value="Apply options" id="optionUpdateBtn" class="btn btn-blue">
+    <label class="smallLabel" id="optionsUpdateToast" hidden="true" title="OptionsUpdateInfo">Options updated!</label>
+<!--/form-->
+<br>
+
+<hr>
+
 <a class="btn btn-blue" id="connectBtn" title='
     Establish a connection to AnkiConnect, which will NOT change your Anki cards yet, but tell you which notes should have their frequency updated.
 Changes are only done to your cards when you click "Update cards".'>Connect to AnkiConnect</a><!--  <i>(doesn't update your cards yet. Please accept the connection in Anki.)</i-->

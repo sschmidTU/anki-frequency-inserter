@@ -15,6 +15,10 @@ class FrequencyInserter {
     notesNoChanges = [];
     notesWithoutFreq = [];
     // HTML stuff:
+    expressionInput;
+    freqNameInput;
+    optionUpdateButton;
+    optionsUpdateToast;
     infoBox;
     freqNewBox;
     freqNewBoxHeader;
@@ -30,6 +34,25 @@ class FrequencyInserter {
     FrequencyInserter() {}
 
     setupHtmlElements() {
+        this.expressionInput = document.getElementById("expressionFieldName");
+        this.expressionInput.value = this.ankiExpressionFieldName;
+        this.freqNameInput = document.getElementById("freqFieldName");
+        this.freqNameInput.value = this.ankiFrequencyFieldName;
+        this.optionUpdateButton = document.getElementById("optionUpdateBtn");
+        this.optionsUpdateToast = document.getElementById("optionsUpdateToast");
+        const self = this;
+        this.optionUpdateButton.onclick = async function() {
+            self.updateOptions();
+        }
+
+        const params = this.getUrlParameters();
+        if (params.expressionFieldName) {
+            this.setExpressionFieldName(params.expressionFieldName, true);
+        }
+        if (params.freqFieldName) {
+            this.setFrequencyFieldName(params.freqFieldName, true);
+        }
+
         this.infoBox = document.getElementById("infoBox");
         this.infoBox.innerHTML = "Please click <i>Connect to AnkiConnect</i>. Don't worry, it doesn't change your cards yet.<br>" +
             "Please accept the connection in Anki after clicking.";
@@ -43,7 +66,6 @@ class FrequencyInserter {
         this.noChangesBoxHeader = document.getElementById("noChangesBoxHeader");
         this.updatedBox = document.getElementById("updatedBox");
         this.updatedBoxHeader = document.getElementById("updatedBoxHeader");
-        const self = this;
         const connectBtn = document.getElementById("connectBtn");
         connectBtn.onclick = async function() {
             await self.connectClick();
@@ -53,6 +75,18 @@ class FrequencyInserter {
         executeBtn.onclick = async function() {
             await self.executeChanges(self);
         }
+    }
+
+    updateOptions() {
+        // TODO validate fields
+        this.setExpressionFieldName(this.expressionInput.value);
+        this.setFrequencyFieldName(this.freqNameInput.value);
+        this.optionsUpdateToast.hidden = false;
+        setTimeout(function() {
+            this.optionsUpdateToast.hidden = true;
+        }, 2000);
+        //this.infoBox.innerText = "Options updated!\n" + this.infoBox.innerText;
+        //this.infoBox.classList.add("expand");
     }
 
     /** Executes the changes (after a click on 'Update cards') that were found after the 'Connect' click. */
@@ -143,9 +177,6 @@ class FrequencyInserter {
         const response = await this.apiRequest("requestPermission");
         console.log("AnkiConnect Response to requestPermission:");
         console.dir(response);
-        this.infoBox.innerHTML = "Review the changes below and click 'Update cards' to execute them.<br>" +
-            "(higher frequency = more common within <i>InnocentCorpus</i>, ~5000 books)";
-        this.infoBox.classList.remove("expandInfobox");
 
         if (response?.result?.permission !== "granted") {
             this.infoBox.innerText = "AnkiConnect permission denied after requestPermission request was sent.\n" +
@@ -161,15 +192,19 @@ class FrequencyInserter {
         this.clearResultsBoxes();
         const noteIds = await this.findNotes(`${this.ankiSearchQuery} ${this.ankiQueryAddition}`);
         const notes = await this.notesInfo(noteIds);
+
         console.log("Total notes found: " + notes.length);
         this.processNotes(notes);
         if (this.notesWithChanges.length === 0 && this.notesWithoutFreq.length === 0) {
             this.infoBox.innerText = `There were no notes with a "${this.ankiFrequencyFieldName}" field name found that need changes.\n` +
                 "Maybe you need to add the field to your note types, see Usage information above.";
-        }
-        if (!this.ankiSearchQuery.includes(this.ankiFrequencyFieldName)) {
+        } else if (!this.ankiSearchQuery.includes(this.ankiFrequencyFieldName)) {
             this.infoBox.innerText = "Warning: ankiInserter.ankiSearchQuery doesn't include ankiInserter.ankiFrequencyFieldName.\n" +
             "You probably forgot to adjust the query or the frequency field name :)\n" + this.infoBox.innerText;
+        } else {
+            this.infoBox.innerHTML = "Review the changes below and click 'Update cards' to execute them.<br>" +
+            "(higher frequency = more common within <i>InnocentCorpus</i>, ~5000 books)";
+            this.infoBox.classList.remove("expandInfobox");
         }
     }
 
@@ -188,7 +223,7 @@ class FrequencyInserter {
             `<td><div class="lastDiv">Old Frequency</div></td>` +
             "</tr>";
         let tableHtmlNoFreqFound = `<table><tbody><tr class='trHeader'><td>${expressionFieldName}</td></tr>`;
-        this.infoBox.innerText = "Processing Notes...\n";
+        this.infoBox.innerText = "Processing Notes...";
         for (const note of notes) {
             const fields = note.fields;
             if (!note.fields) {
@@ -287,15 +322,23 @@ class FrequencyInserter {
         } else {
             this.noFreqFoundBox.classList.remove("expand");
         }
+
+        this.infoBox.innerText += " done."
     }
 
-    setExpressionFieldName(name) {
+    setExpressionFieldName(name, updateUI = false) {
         this.ankiExpressionFieldName = name;
+        if (updateUI) {
+            this.expressionInput.value = name;
+        }
     }
 
-    setFrequencyFieldName(name) {
+    setFrequencyFieldName(name, updateUI = false) {
         this.ankiFrequencyFieldName = name;
         this.ankiSearchQuery = `${name}:*`;
+        if (updateUI) {
+            this.freqNameInput.value = name;
+        }
     }
 
     async findNotes(query) {
@@ -370,6 +413,19 @@ class FrequencyInserter {
         let tmp = document.createElement("div");
         tmp.innerHTML = htmlString;
         return tmp.textContent || tmp.innerText || "";
+    }
+    
+    getUrlParameters() {
+        let params = {};
+        let parser = document.createElement('a');
+        parser.href = window.location.href;
+        const query = parser.search.substring(1);
+        const vars = query.split('&');
+        for (var i = 0; i < vars.length; i++) {
+          const pair = vars[i].split('=');
+          params[pair[0]] = decodeURIComponent(pair[1]);
+        }
+        return params;
     }
 }
 
