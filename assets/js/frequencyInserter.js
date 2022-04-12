@@ -96,8 +96,8 @@ class FrequencyInserter {
             return;
         }
         if (this.notesWithChanges.length === 0 && this.notesWithoutFreq.length === 0) {
-            this.infoBox.innerText = `There were no notes with a "${this.ankiFrequencyFieldName}" field name found that need changes.\n` +
-                "Maybe you need to add the field to your note types, see Usage information above.";
+            this.infoBox.innerText = `There were no notes with the given frequency and expression fields found that need changes.\n` +
+                "Maybe you need to add the frequency field to your note types, see Usage information above.";
             return;
         }
 
@@ -195,16 +195,25 @@ class FrequencyInserter {
 
         console.log("Total notes found: " + notes.length);
         this.processNotes(notes);
-        if (this.notesWithChanges.length === 0 && this.notesWithoutFreq.length === 0) {
-            this.infoBox.innerText = `There were no notes with a "${this.ankiFrequencyFieldName}" field name found that need changes.\n` +
-                "Maybe you need to add the field to your note types, see Usage information above.";
-        } else if (!this.ankiSearchQuery.includes(this.ankiFrequencyFieldName)) {
-            this.infoBox.innerText = "Warning: ankiInserter.ankiSearchQuery doesn't include ankiInserter.ankiFrequencyFieldName.\n" +
+        this.infoBox.innerText = "";
+        this.infoBox.classList.remove("expandInfobox");
+        if (!this.ankiSearchQuery.includes(this.ankiFrequencyFieldName)) {
+            this.infoBox.innerText += "Warning: ankiInserter.ankiSearchQuery doesn't include ankiInserter.ankiFrequencyFieldName.\n" +
             "You probably forgot to adjust the query or the frequency field name :)\n" + this.infoBox.innerText;
-        } else {
-            this.infoBox.innerHTML = "Review the changes below and click 'Update cards' to execute them.<br>" +
+        } if (this.notesWithChanges.length === 0 && this.notesWithoutFreq.length === 0) {
+            if (this.infoBox.innerText !== "") {
+                this.infoBox.innerText += "\n";
+                this.infoBox.classList.add("expandInfobox");
+            }
+            this.infoBox.innerText += `There were no notes with the given expression and frequency field names found that need changes.\n` +
+                "Maybe you need to add the field to your note types, see Usage information above.";
+        }  else {
+            if (this.infoBox.innerText !== "") {
+                this.infoBox.innerText += "\n";
+                this.infoBox.classList.add("expandInfobox");
+            }
+            this.infoBox.innerHTML += "Review the changes below and click 'Update cards' to execute them.<br>" +
             "(higher frequency = more common within <i>InnocentCorpus</i>, ~5000 books)";
-            this.infoBox.classList.remove("expandInfobox");
         }
     }
 
@@ -232,7 +241,12 @@ class FrequencyInserter {
                 continue;
             }
 
-            let expression = fields[this.ankiExpressionFieldName].value;
+            let expression = fields[this.ankiExpressionFieldName]?.value;
+            if (!expression) {
+                console.log (`note missing field '${this.ankiExpressionFieldName}':\n` +
+                    JSON.stringify(note, null, 2)); // 2: beautify
+                continue;
+            }
             if (!fields[this.ankiFrequencyFieldName]) {
                 this.infoBox.innerText += `Note ${expression} missing frequency field ${this.ankiFrequencyFieldName} (ankiInserter.ankiFrequencyFieldName)`;
                 continue;
