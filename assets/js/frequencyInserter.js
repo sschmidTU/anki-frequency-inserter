@@ -2,8 +2,12 @@ class FrequencyInserter {
     ankiConnectVersion = 6;
     ankiConnectUrl = "http://localhost:8765";
     ankiFuriganaFieldName = "Furigana";
-    ankiFrequencyFieldName = "FrequencyInnocent";
-    ankiSearchQuery = `${this.ankiFrequencyFieldName}:*`; // can be modified by user. take care to update frequencyFieldName if necessary though
+    ankiFrequencyFieldName = "FrequencyInnocent"; // see setFrequencyFieldName()
+    /** name of the field in Anki that's used to look up the frequency.
+     * "expression" is more precise than "word", but we'll go for the shorter term.
+     */
+    ankiExpressionFieldName = "Front"; // could also be "Expression" etc., depending on your Anki deck setup
+    ankiSearchQuery = `${this.ankiFrequencyFieldName}:*`; // can be modified by user.
     ankiQueryAddition = ""; // extends the anki query, e.g. this could be "deck:MyJPDeck".
     tryFuriganaFieldAsKey = true;
     connectPermissionGranted = false;
@@ -47,7 +51,7 @@ class FrequencyInserter {
         };
         const executeBtn = document.getElementById("updateCardsBtn");
         executeBtn.onclick = async function() {
-            await self.executeChanges();
+            await self.executeChanges(self);
         }
     }
 
@@ -69,15 +73,15 @@ class FrequencyInserter {
         console.dir(this.notesWithChanges);
 
         let tableHtml = "<table><tbody><tr class='trHeader'>" +
-            "<td>Front</td>" +
+            "<td>" + this.ankiExpressionFieldName + "</td>" +
             "<td>NoteId</td>" +
             "<td>New Frequency</td>" +
             "<td>Old Frequency</td>" +
             "</tr>";
 
         const actions = [];
-        this.notesWithChanges.forEach((note) => tableHtml += this.addActionFromNote(note, actions));
-        this.notesWithoutFreq.forEach((note) => tableHtml += this.addActionFromNote(note, actions));
+        this.notesWithChanges.forEach((note) => tableHtml += this.addActionFromNote(note, actions, this));
+        this.notesWithoutFreq.forEach((note) => tableHtml += this.addActionFromNote(note, actions, this));
         tableHtml += "</trbody></table>";
         const totalUpdated = actions.length;
         this.updatedBoxHeader.innerText = `Updated: (${totalUpdated} total)`;
@@ -105,20 +109,19 @@ class FrequencyInserter {
     }
 
     addActionFromNote(note, actions) {
-        const front = note.fields.Front.value;
+        const expression = note.fields[this.ankiExpressionFieldName].value;
         let freqNew = note.newFrequency;
         if (!(freqNew >= 0)) {
             // shouldn't happen, just testing to make sure
-            console.log(`note ${front} has an invalid frequency found: ${freqNew}. Skipping.`);
+            console.log(`note ${expression} has an invalid frequency found: ${freqNew}. Skipping.`);
             return;
         }
-        let freqOld = note.fields.FrequencyInnocent.value;
+        let freqOld = note.fields[this.ankiFrequencyFieldName].value;
         freqOld = freqOld.replaceAll("&","&amp;").replaceAll("<","&lt;");
         const id = note.noteId;
 
-        const fields = {
-            "FrequencyInnocent": freqNew.toString() // without toString API gives error (int)
-        };
+        const fields = {};
+        fields[this.ankiFrequencyFieldName] = freqNew.toString() // without toString API gives error (int)
         const noteParam = {
             "note": {
                 "id": id,
@@ -129,7 +132,7 @@ class FrequencyInserter {
             "action": "updateNoteFields",
             "params": noteParam
         });
-        return `<tr><td><div>${front}</div></td>` +
+        return `<tr><td><div>${expression}</div></td>` +
             `<td><div class="longDiv">${id}</div></td>` + // without longDiv this gets cramped
             `<td><div>${freqNew}</div></td>` +
             `<td><div class="lastDiv">${freqOld}</div></td>` + // without longDiv/lastDiv this gets cramped
@@ -176,14 +179,16 @@ class FrequencyInserter {
         this.notesWithoutFreq = [];
         let noFreqFoundCount = 0;
         const correctFrequencyRegex = /^[0-9]+$/;
-        let tableHtmlNew = "<table><tbody><tr class='trHeader'><td><div>Front</div></td><td><div>Frequency</div></td></tr>";
-        let tableHtmlNoChanges = "<table><tbody><tr class='trHeader'><td>Front</td><td>Frequency</td></tr>";
+        const expressionFieldName = this.ankiExpressionFieldName;
+        let tableHtmlNew = `<table><tbody><tr class='trHeader'><td><div>${expressionFieldName}</div></td><td><div>Frequency</div></td></tr>`;
+        let tableHtmlNoChanges = `<table><tbody><tr class='trHeader'><td>${expressionFieldName}</td><td>Frequency</td></tr>`;
         let tableHtmlChanges = "<table><tbody><tr class='trHeader'>" +
-            "<td><div>Front</div></td>" +
+            `<td><div>${expressionFieldName}</div></td>` +
             "<td><div>New Frequency</div></td>" +
             `<td><div class="lastDiv">Old Frequency</div></td>` +
             "</tr>";
-        let tableHtmlNoFreqFound = "<table><tbody><tr class='trHeader'><td>Front</td></tr>";
+        let tableHtmlNoFreqFound = `<table><tbody><tr class='trHeader'><td>${expressionFieldName}</td></tr>`;
+        this.infoBox.innerText = "Processing Notes...\n";
         for (const note of notes) {
             const fields = note.fields;
             if (!note.fields) {
@@ -192,9 +197,13 @@ class FrequencyInserter {
                 continue;
             }
 
+            let expression = fields[this.ankiExpressionFieldName].value;
+            if (!fields[this.ankiFrequencyFieldName]) {
+                this.infoBox.innerText += `Note ${expression} missing frequency field ${this.ankiFrequencyFieldName} (ankiInserter.ankiFrequencyFieldName)`;
+                continue;
+            }
             const freqExisting = fields[this.ankiFrequencyFieldName].value;
-            let front = fields.Front.value;
-            let freqInnocent = innocent_terms_complete[front];
+            let freqInnocent = innocent_terms_complete[expression];
             const validFrequency = (frequency) => frequency >= 0;
             const furigana = fields[this.ankiFuriganaFieldName]?.value;
             if (!validFrequency(freqInnocent) && furigana && this.tryFuriganaFieldAsKey) {
@@ -202,31 +211,31 @@ class FrequencyInserter {
                 freqInnocent = innocent_terms_complete[furiganaStripped];
             }
             if (!validFrequency(freqInnocent)) {
-                const frontStripped = this.stripHtml(front);
+                const expressionStripped = this.stripHtml(expression);
                 // if (frontStripped !== front) {
                 //     console.log("front that had html: " + frontStripped);
                 // }
-                freqInnocent = innocent_terms_complete[frontStripped];
+                freqInnocent = innocent_terms_complete[expressionStripped];
             }
             if (!validFrequency(freqInnocent)) {
                 noFreqFoundCount++;
                 tableHtmlNoFreqFound += "<tr>" +
-                    `<td>${front}</td>` +
+                    `<td>${expression}</td>` +
                     "</tr>";
             } else {
                 note.newFrequency = freqInnocent;
                 if (freqExisting === "") {
                     this.notesWithoutFreq.push(note);
-                    tableHtmlNew += `<tr><td><div>${front}</div></td><td><div>${freqInnocent}</div></td></tr>`;
+                    tableHtmlNew += `<tr><td><div>${expression}</div></td><td><div>${freqInnocent}</div></td></tr>`;
                 } else if (correctFrequencyRegex.test(freqExisting)) {
                     noChangesNotes.push(note);
-                    tableHtmlNoChanges += `<tr><div><td>${front}</div></td><td><div>${freqExisting}</div></td></tr>`;
+                    tableHtmlNoChanges += `<tr><div><td>${expression}</div></td><td><div>${freqExisting}</div></td></tr>`;
                 } else { // old frequency wasn't correct
-                    let freqOld = fields.FrequencyInnocent.value;
+                    let freqOld = fields[this.ankiFrequencyFieldName].value;
                     // escape html
                     freqOld = freqOld.replaceAll("&","&amp;").replaceAll("<","&lt;");
                     tableHtmlChanges += "<tr>" +
-                        `<td>${front}</td>` +
+                        `<td>${expression}</td>` +
                         `<td>${freqInnocent}</td>` +
                         `<td>${freqOld}</td>` +
                         "</tr>";
@@ -278,6 +287,15 @@ class FrequencyInserter {
         } else {
             this.noFreqFoundBox.classList.remove("expand");
         }
+    }
+
+    setExpressionFieldName(name) {
+        this.ankiExpressionFieldName = name;
+    }
+
+    setFrequencyFieldName(name) {
+        this.ankiFrequencyFieldName = name;
+        this.ankiSearchQuery = `${name}:*`;
     }
 
     async findNotes(query) {
