@@ -28,9 +28,9 @@ Inserts Japanese word frequencies into a preexisting field (<i>FrequencyInnocent
 
 <p title="Options">Options:</p>
 <!--form id="optionsForm"-->
-  <label for="expressionFieldName">Name of expression field:</label>
+  <label for="expressionFieldName" title="Name of the field in your Anki cards that has the word/expression for which the frequency should be searched. 'Front' by default, but depends on your Anki Note Types.">Name of expression field:</label>
     <input type="text" id="expressionFieldName" name="expressionFieldName"><br>
-  <label for="freqFieldName">Name of frequency &nbsp;field:</label>
+  <label for="freqFieldName" title="Name of the field in your Anki Cards where the frequency should be stored/inserted. You need to already have this field in your note types, see usage information above">Name of frequency &nbsp;field:</label>
     <input type="text" id="freqFieldName" name="freqFieldName"><br>
   <input type="submit" value="Apply options" id="optionUpdateBtn" class="btn btn-blue">
     <label class="smallLabel" id="optionsUpdateToast" hidden="true" title="OptionsUpdateInfo">Options updated!</label>
@@ -67,7 +67,8 @@ Sends the changes above to AnkiConnect, finally updating your Anki cards (notes)
 <hr>
 
 <div id="foot">
-    <p>@ 2022-04 <a href="https://github.com/sschmidTU/anki-frequency-inserter">Anki Frequency Inserter v1.2.0.3</a> by <a href="https://community.wanikani.com/t/anki-word-frequency-inserter-learn-most-common-words-first/53407">Saimin@WK</a>
+    <p>@ 2022-04 <a href="https://github.com/sschmidTU/anki-frequency-inserter">
+      Anki Frequency Inserter v1.2.0.4</a> by <a href="https://community.wanikani.com/t/anki-word-frequency-inserter-learn-most-common-words-first/53407">Saimin@WK</a>
 
 <script src="assets/js/innocent_terms_complete.js"></script>
 <script src="assets/js/frequencyInserter.js"></script> 
