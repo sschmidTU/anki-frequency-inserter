@@ -22,7 +22,7 @@ This will show you which notes the script will update, after you **click 'Execut
 
 **Note that this currently does not work in Chrome online.** If you want to use this in Chrome, you have to download it and run it offline, see Troubleshooting section.
 
-*For the technically minded: In the browser console, you can set `ankiInserter.ankiQueryAddition` e.g. to `Front:私` to limit what cards are updated (e.g. for testing).*
+*For the technically minded: In the browser console, you can set `ankiInserter.ankiQueryAddition` e.g. to `Front:私` or `Expression:*ている*` to limit what cards are updated (e.g. for testing).*
 
 ## Requirements
 * The Anki addon [AnkiConnect](https://ankiweb.net/shared/info/2055492159) needs to be installed (which should already be the case if you use [Yomichan](https://foosoft.net/projects/yomichan/)).
