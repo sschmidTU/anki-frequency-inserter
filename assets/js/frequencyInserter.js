@@ -48,6 +48,10 @@ class FrequencyInserter {
     updatedBoxHeader;
 
     constructor() {
+        this.checkCorpus();
+    }
+
+    checkCorpus() {
         if (window.innocent_terms_complete) { // loaded via script in index.html. if not checked via window, throws null error if null
             this.corpusUsed = this.CorpusEnum.Innocent;
             this.corpusUsedInfo = this.CorpusInfo.Innocent;
