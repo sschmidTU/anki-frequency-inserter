@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html class="no-js" lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Inserts Japanese word frequencies into your Anki notes/cards."/>
+  <meta property="og:description" content="Inserts Japanese word frequencies into your Anki notes/cards."/>
+  <meta property="og:image" content="https://github.com/sschmidTU/anki-frequency-inserter/blob/main/assets/img/favicon_256.png?raw=true"/>
+  <meta property="og:image:type" content="image/png"/>
+  <meta property="og:image:width" content="256"/>
+  <meta property="og:image:height" content="256"/>
+  <meta property="og:title" content="Anki Frequency Inserter"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:updated_time" content="1631042980"/>
+  <title>Anki Frequency Inserter</title>
+  <link href="assets/img/favicon.ico" rel="icon">
+  <link href="assets/css/style.css" media="screen, projection" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+	<div role="main" class="main">
+			
+	  <h1><img src="assets/img/favicon.ico" height="32"/>  Anki Frequency Inserter</h1>
+	  <div id="subtitle" style="text-align: center" title="">
+Inserts Japanese word frequencies into a preexisting field (<i>FrequencyBCCWJ</i>) in your <a href="https://apps.ankiweb.net/" class="a-blue">Anki</a> notes/cards.<br>
+<a href="https://github.com/sschmidTU/anki-frequency-inserter#anki-frequency-inserter" class="a-blue">Usage information and disclaimer</a></div>
+<hr>
+
+<p title="Options">Options:</p>
+<!--form id="optionsForm"-->
+  <label for="expressionFieldName" title="Name of the field in your Anki cards that has the word/expression for which the frequency should be searched. 'Front' by default, but depends on your Anki Note Types.">Name of expression field:</label>
+    <input type="text" id="expressionFieldName" name="expressionFieldName"><br>
+  <label for="freqFieldName" title="Name of the field in your Anki Cards where the frequency should be stored/inserted. You need to already have this field in your note types, see usage information above">Name of frequency &nbsp;field:</label>
+    <input type="text" id="freqFieldName" name="freqFieldName"><br>
+  <input type="submit" value="Apply options" id="optionUpdateBtn" class="btn btn-blue">
+    <label class="smallLabel" id="optionsUpdateToast" hidden="true" title="OptionsUpdateInfo">Options updated!</label>
+<!--/form-->
+<br>
+
+<hr>
+
+<a class="btn btn-blue" id="connectBtn" title='
+    Establish a connection to AnkiConnect, which will NOT change your Anki cards yet, but tell you which notes should have their frequency updated.
+Changes are only done to your cards when you click "Update cards".'>Connect to AnkiConnect</a><!--  <i>(doesn't update your cards yet. Please accept the connection in Anki.)</i-->
+
+<p title="Messages from Anki Inserter, or AnkiConnect responses">Information:</p>
+<div class="logbox" id="infoBox">Loading, please wait...</div>
+
+<p id="notesFreqNewBoxHeader">Notes where frequency will be newly added:</p>
+<div class="logbox" id="notesFreqNewBox"></div>
+
+<p id="changesBoxHeader">Notes where frequency will be changed:</p>
+<div class="logbox" id="changesBox"></div>
+
+<p id="noFreqFoundBoxHeader">Notes where no frequency was found in BCCWJ Corpus:</p>
+<div class="logbox" id="noFreqFoundBox"></div>
+
+<p id="noChangesBoxHeader">Notes that already have the correct frequency:</p>
+<div class="logbox" id="noChangesBox"></div>
+
+<a class="btn btn-blue" id="updateCardsBtn" title="
+Sends the changes above to AnkiConnect, finally updating your Anki cards (notes).">Update cards</a>
+
+<p id="updatedBoxHeader">Updated:</p>
+<div class="logbox" id="updatedBox"></div>
+
+<hr>
+
+<div id="foot">
+    <p>@ 2022-04 <a href="https://github.com/sschmidTU/anki-frequency-inserter">
+      Anki Frequency Inserter v1.2.0.4</a> by <a href="https://community.wanikani.com/t/anki-word-frequency-inserter-learn-most-common-words-first/53407">Saimin@WK</a>
+
+<script src="assets/js/BCCWJ/terms_BCCWJ.js"></script>
+<script src="assets/js/BCCWJ/frequencyInserter_BCCWJ.js"></script> 
+
+  </div>
+</body>
+</html>
