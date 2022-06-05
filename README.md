@@ -58,7 +58,7 @@ You can either use another addon like [Advanced Browser](https://ankiweb.net/sha
 
 Or if you just want to search without sorting or addons, you can use a query like `deck:Yomichan FrequencyInnocent:9___` (3 underscores) which will find all cards with frequency 9xxx. (Or for frequency >10k: `_____*` (5 underscores + `*` wildcard)
 
-To learn the most frequent words first, what i do is select some cards -> right click -> Reschedule -> place in review queue (0/0).<br>
+To learn the most frequent words first, what i do is select some cards -> right click -> Reschedule / Set Due Date -> place in review queue (0/0).<br>
 *There's probably a smarter way, since this makes the first interval 3 days for me, so i have to mark it 'Again' on the first review*
 
 ## The problem with Yomichan's frequency export
