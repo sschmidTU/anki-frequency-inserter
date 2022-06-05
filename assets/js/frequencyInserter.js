@@ -49,6 +49,9 @@ class FrequencyInserter {
         if (params.expressionFieldName) {
             this.setExpressionFieldName(params.expressionFieldName, true);
         }
+        if (params.frequencyFieldName) {
+            this.setFrequencyFieldName(params.frequencyFieldName, true);
+        }
         if (params.freqFieldName) {
             this.setFrequencyFieldName(params.freqFieldName, true);
         }

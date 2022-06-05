@@ -52,6 +52,9 @@ class FrequencyInserter {
         if (params.frequencyFieldName) {
             this.setFrequencyFieldName(params.frequencyFieldName, true);
         }
+        if (params.freqFieldName) {
+            this.setFrequencyFieldName(params.freqFieldName, true);
+        }
 
         this.infoBox = document.getElementById("infoBox");
         this.infoBox.innerHTML = "Please click <i>Connect to AnkiConnect</i>. Don't worry, it doesn't change your cards yet.<br>" +
