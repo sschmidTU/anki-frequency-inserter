@@ -3,6 +3,8 @@ Inserts Japanese word frequencies into your [Anki](https://apps.ankiweb.net/) fl
 
 Live here: https://sschmidtu.github.io/anki-frequency-inserter/
 
+*[Version using BCCWJ corpus](https://sschmidtu.github.io/anki-frequency-inserter/index_BCCWJ.html?expressionFieldName=Expression&frequencyFieldName=FrequencyBCCWJ) (Contemporary Written Japanese, relative instead of absolute frequency: 100 = 100th most common word)*
+
 ![image](https://user-images.githubusercontent.com/33069673/132860267-ddff3b33-4699-42e5-8120-5a4e24f6667d.png)
 (some UI elements were cut out of the screenshot for simplicity)
 
