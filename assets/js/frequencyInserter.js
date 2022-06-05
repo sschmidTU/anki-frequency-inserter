@@ -87,7 +87,7 @@ class FrequencyInserter {
         }
 
         this.infoBox = document.getElementById("infoBox");
-        this.infoBox.innerHTML = "Please click <i>Connect to AnkiConnect</i>. It doesn't update your cards yet, you'll get a preview.<br>" +
+        this.infoBox.innerHTML = "Please click <i>Connect to AnkiConnect</i>. It doesn't update your cards yet, you'll get a preview below.<br>" +
             "Please accept the connection in Anki after clicking (once).";
         this.freqNewBox = document.getElementById("notesFreqNewBox");
         this.freqNewBoxHeader = document.getElementById("notesFreqNewBoxHeader");
