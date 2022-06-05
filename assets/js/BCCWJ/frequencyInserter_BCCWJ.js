@@ -227,8 +227,9 @@ class FrequencyInserter {
         let noFreqFoundCount = 0;
         const correctFrequencyRegex = /^[0-9]+$/;
         const expressionFieldName = this.ankiExpressionFieldName;
-        let tableHtmlNew = `<table><tbody><tr class='trHeader'><td><div>${expressionFieldName}</div></td><td><div>Frequency</div></td></tr>`;
-        let tableHtmlNoChanges = `<table><tbody><tr class='trHeader'><td>${expressionFieldName}</td><td>Frequency</td></tr>`;
+        const frequencyFieldName = this.ankiFrequencyFieldName;
+        let tableHtmlNew = `<table><tbody><tr class='trHeader'><td><div>${expressionFieldName}</div></td><td><div class="frequencyHeader">${frequencyFieldName}</div></td></tr>`;
+        let tableHtmlNoChanges = `<table><tbody><tr class='trHeader'><td>${expressionFieldName}</td><td><div class="frequencyHeader">${frequencyFieldName}</div></td></tr>`;
         let tableHtmlChanges = "<table><tbody><tr class='trHeader'>" +
             `<td><div>${expressionFieldName}</div></td>` +
             "<td><div>New Frequency</div></td>" +
@@ -303,8 +304,7 @@ class FrequencyInserter {
         tableHtmlNoFreqFound += tableEnd;
 
         const freqNewlyAddedCount = this.notesWithoutFreq.length;
-        this.freqNewBoxHeader.innerText = "Notes where frequency will be newly added: " +
-            `(${freqNewlyAddedCount} total)`;
+        this.freqNewBoxHeader.innerText = `Notes where frequency will be newly added: (${freqNewlyAddedCount} total)`;
         if (freqNewlyAddedCount > 0) {
             this.freqNewBox.innerHTML = tableHtmlNew;
             this.freqNewBox.classList.add("expand");

@@ -359,6 +359,10 @@ td div {
   max-width: 600px;
 }
 
+.frequencyHeader {
+  max-width: 200px;
+}
+
 tr:nth-child(even){background-color: #f5f5f5;}
 tr:hover {background-color: #eee;}
 
