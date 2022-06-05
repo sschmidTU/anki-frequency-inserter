@@ -4,7 +4,8 @@
 const FS = require("fs");
 const outputFileName = "innocent_terms_complete.js";
 const termsObject = {};
-let fileContent = "const innocent_terms_complete =";
+let fileContent = "var innocent_terms_complete =";
+// need to use var instead of const to be globally available in window object
 for (let i=1; i<29; i++) {
     const terms = FS.readFileSync(`./term_meta_bank_${i}.json`);
     const termsJson = JSON.parse(terms);

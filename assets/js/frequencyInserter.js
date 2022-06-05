@@ -1,4 +1,18 @@
 class FrequencyInserter {
+    CorpusEnum = {
+        Innocent: 0,
+        BCCWJ: 1
+    };
+    CorpusInfo = {
+        Innocent: {
+            name: "InnocentCorpus",
+            display_name: "InnocentCorpus",
+        },
+        BCCWJ: {
+            name: "BCCWJ corpus",
+            display_name: "BCCWJ corpus",
+        }
+    };
     ankiConnectVersion = 6;
     ankiConnectUrl = "http://localhost:8765";
     ankiFuriganaFieldName = "Furigana";
@@ -9,6 +23,8 @@ class FrequencyInserter {
     ankiExpressionFieldName = "Front"; // could also be "Expression" etc., depending on your Anki deck setup
     ankiSearchQuery = `${this.ankiFrequencyFieldName}:*`; // can be modified by user.
     ankiQueryAddition = ""; // extends the anki query, e.g. this could be "deck:MyJPDeck".
+    corpusUsed = this.CorpusEnum.Innocent; // will be updated/checked later
+    corpusUsedInfo = this.CorpusInfo.Innocent;
     tryFuriganaFieldAsKey = true;
     connectPermissionGranted = false;
     notesWithChanges = [];
@@ -31,7 +47,17 @@ class FrequencyInserter {
     updatedBox;
     updatedBoxHeader;
 
-    FrequencyInserter() {}
+    constructor() {
+        if (window.innocent_terms_complete) { // loaded via script in index.html. if not checked via window, throws null error if null
+            this.corpusUsed = this.CorpusEnum.Innocent;
+            this.corpusUsedInfo = this.CorpusInfo.Innocent;
+            this.ankiFrequencyFieldName = "FrequencyInnocent"; // may be overwritten later
+        } else if (window.terms_BCCWJ) { // loaded via script in index_BCCWJ.html
+            this.corpusUsed = this.CorpusEnum.BCCWJ;
+            this.corpusUsedInfo = this.CorpusInfo.BCCWJ;
+            this.ankiFrequencyFieldName = "FrequencyBCCWJ"; // may be overwritten later
+        }
+    }
 
     setupHtmlElements() {
         this.expressionInput = document.getElementById("expressionFieldName");
@@ -215,12 +241,24 @@ class FrequencyInserter {
                 this.infoBox.innerText += "\n";
                 this.infoBox.classList.add("expandInfobox");
             }
-            this.infoBox.innerHTML += "Review the changes below and click 'Update cards' to execute them.<br>" +
-            "(higher frequency = more common within <i>InnocentCorpus</i>, ~5000 books)";
+            this.infoBox.innerHTML += "Review the changes below and click 'Update cards' to execute them.<br>";
+            if (this.corpusUsed === this.CorpusEnum.Innocent) {
+                this.infoBox.innerHTML += "(higher frequency = more common within <i>InnocentCorpus</i>, ~5000 books)";
+            } else if (this.corpusUsed === this.CorpusEnum.BCCWJ) {
+                this.infoBox.innerHTML += "(frequency 100 = 100th most common word within <i>BCCWJ Corpus</i> of Contemporary Written Japanese)";
+            }
         }
     }
 
     processNotes(notes) {
+        let corpusTerms = {};
+        if (this.corpusUsed === this.CorpusEnum.Innocent) {
+            corpusTerms = innocent_terms_complete;
+        } else if (this.corpusUsed === this.CorpusEnum.BCCWJ) {
+            corpusTerms = terms_BCCWJ;
+        } else {
+            console.log("error: corpusUsed not handled in processNotes()");
+        }
         let noChangesNotes = [];
         this.notesWithChanges = [];
         this.notesWithoutFreq = [];
@@ -256,30 +294,30 @@ class FrequencyInserter {
                 continue;
             }
             const freqExisting = fields[this.ankiFrequencyFieldName].value;
-            let freqInnocent = innocent_terms_complete[expression];
+            let freqCorpus = corpusTerms[expression];
             const validFrequency = (frequency) => frequency >= 0;
             const furigana = fields[this.ankiFuriganaFieldName]?.value;
-            if (!validFrequency(freqInnocent) && furigana && this.tryFuriganaFieldAsKey) {
+            if (!validFrequency(freqCorpus) && furigana && this.tryFuriganaFieldAsKey) {
                 const furiganaStripped = furigana.replaceAll(/<rt>.*<\/rt>/g, "").replaceAll(/<\/?ruby>/g, "");
-                freqInnocent = innocent_terms_complete[furiganaStripped];
+                freqCorpus = corpusTerms[furiganaStripped];
             }
-            if (!validFrequency(freqInnocent)) {
+            if (!validFrequency(freqCorpus)) {
                 const expressionStripped = this.stripHtml(expression);
                 // if (frontStripped !== front) {
                 //     console.log("front that had html: " + frontStripped);
                 // }
-                freqInnocent = innocent_terms_complete[expressionStripped];
+                freqCorpus = corpusTerms[expressionStripped];
             }
-            if (!validFrequency(freqInnocent)) {
+            if (!validFrequency(freqCorpus)) {
                 noFreqFoundCount++;
                 tableHtmlNoFreqFound += "<tr>" +
                     `<td>${expression}</td>` +
                     "</tr>";
             } else {
-                note.newFrequency = freqInnocent;
+                note.newFrequency = freqCorpus;
                 if (freqExisting === "") {
                     this.notesWithoutFreq.push(note);
-                    tableHtmlNew += `<tr><td><div>${expression}</div></td><td><div>${freqInnocent}</div></td></tr>`;
+                    tableHtmlNew += `<tr><td><div>${expression}</div></td><td><div>${freqCorpus}</div></td></tr>`;
                 } else if (correctFrequencyRegex.test(freqExisting)) {
                     noChangesNotes.push(note);
                     tableHtmlNoChanges += `<tr><div><td>${expression}</div></td><td><div>${freqExisting}</div></td></tr>`;
@@ -289,7 +327,7 @@ class FrequencyInserter {
                     freqOld = freqOld.replaceAll("&","&amp;").replaceAll("<","&lt;");
                     tableHtmlChanges += "<tr>" +
                         `<td>${expression}</td>` +
-                        `<td>${freqInnocent}</td>` +
+                        `<td>${freqCorpus}</td>` +
                         `<td>${freqOld}</td>` +
                         "</tr>";
                     this.notesWithChanges.push(note);
@@ -331,8 +369,7 @@ class FrequencyInserter {
             this.changesBox.classList.remove("expand");
         }
 
-        this.noFreqFoundBoxHeader.innerText = "Notes where no frequency was found in InnocentCorpus: " +
-            `(${noFreqFoundCount} total)`;
+        this.noFreqFoundBoxHeader.innerText = `Notes where no frequency was found in ${this.corpusUsedInfo.display_name}: (${noFreqFoundCount} total)`;
         if (noFreqFoundCount > 0) {
             this.noFreqFoundBox.innerHTML = tableHtmlNoFreqFound;
             this.noFreqFoundBox.classList.add("expand");
@@ -452,3 +489,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
     inserter.setupHtmlElements();
     window.ankiInserter = inserter; // for console access like changing AnkiConnect url/port
 });
+// apparently equivalent:
+// document.addEventListener("readystatechange", function(event) { 
+//     if (document.readyState === "complete") {
+//         // initialize, see above
+//     }
+// });
