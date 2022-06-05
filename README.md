@@ -49,7 +49,7 @@ If your notes don't have that field yet, you can add it in Anki via Tools -> Man
 ## Disclaimer
 
 This script should be very safe, it only updates the frequency field of notes (cards), if it already exists.<br>
-**Still, even though this script is safe, please back up your Anki collection via File -> Export beforehand. It's good practice anyways.** Use the script at your own risk, i will not be responsible for changes to your Anki decks.
+**Still, even though this script is safe, please back up your Anki collection via File -> Export beforehand. It's good practice anyways.** Use the script at your own risk, I will not be responsible for changes to your Anki decks.
 
 ## Using this to sort/search your Anki cards by frequency in *Browse*
 
@@ -79,8 +79,8 @@ Editing that manually for hundreds of cards is a hassle. That's why i made this 
 AnkiConnect API see [here](https://github.com/FooSoft/anki-connect) or [here (in color)](https://foosoft.net/projects/anki-connect/).<br>
 The only action this script uses that can change your cards/notes is `updateNoteFields` (technically, also `multi`, which here includes multiple `updateNoteFields` requests). And it only changes the field that's contained in the request, namely the frequency field.
 
-Uses [InnocentCorpus](https://foosoft.net/projects/yomichan/), a corpus of 5000+ books, which was bundled into a .js (~4.35MB) in `assets/js`.<br>
-This means that the first visit to the website takes ~4.5MB of bandwidth.
+Uses [InnocentCorpus](https://foosoft.net/projects/yomichan/), a corpus of 5000+ books, which was bundled into a .js (~4.35MB, 1.7MB zipped) in `assets/js`.<br>
+This means that the first visit to the website takes ~1.7MB of bandwidth (~5.8MB for BCCWJ version).
 
 If you want to run this locally, this seems to work just by opening the index.html,
 however the permission in AnkiConnect will be called "null". Also, there might be CORS issues.<br>
