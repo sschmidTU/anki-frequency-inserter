@@ -22,17 +22,16 @@ This will show you which notes the script will update, after you **click 'Execut
 
 **Note that this currently does not work in Chrome online.** If you want to use this in Chrome, you have to download it and run it offline, see Troubleshooting section.
 
+*For the technically minded: In the browser console, you can set `ankiInserter.ankiQueryAddition` e.g. to `Front:私` to limit what cards are updated (e.g. for testing).*
+
 ## Requirements
 * The Anki addon [AnkiConnect](https://ankiweb.net/shared/info/2055492159) needs to be installed (which should already be the case if you use [Yomichan](https://foosoft.net/projects/yomichan/)).
 * Anki needs to be running.
 * **The Anki browse window should be closed**, as tempting as it is to check the changes immediately.
 I think the worst that can happen is that the currently opened card will not be updated. I tested this with ~900 changes and the rest was fine.
-* **Your notes need to have a field *FrequencyInnocent***<br>
+* **Your notes need to have a field *FrequencyInnocent* or similar** (you can change that name in the “frequency field” option near the top)<br>
 If your notes don't have that field yet, you can add it in Anki via Tools -> Manage Note Types -> Fields.<br>
 *Note that if you use Sync in Anki, adding a field to your notes requires a full upload to AnkiWeb for the next Sync.*
-  * You can change the field name if you're technically minded / can use the browser console:<br>
-Go into the console and change `ankiInserter.ankiFrequencyFieldName`, and `ankiInserter.ankiSearchQuery` accordingly.<br>
-You can also set `ankiInserter.ankiQueryAddition` e.g. to `Front:私` to limit what cards are updated (e.g. for testing).
 
 ## Troubleshooting
 
