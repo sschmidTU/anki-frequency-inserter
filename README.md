@@ -34,7 +34,8 @@ You can also set `ankiInserter.ankiQueryAddition` e.g. to `Front:私` to limit w
 
 ## Troubleshooting
 
-* **For now this doesn't work in Chrome online due to CORS / Private Network Access changes in Chrome.**
+* **For me this currently only works offline, not online in Chrome online due to CORS / Private Network Access changes in Chrome.**
+  * To download the "offline version", just download this repository: At the top of this page, click Code -> Download ZIP. Extract it to a folder, then open one of the index.html files (BCCWJ uses the BCCWJ corpus with relative frequency, instead of the InnocentCorpus)
   * see https://developer.chrome.com/blog/private-network-access-preflight/
   * It still works offline in Chrome (see below), and online in Firefox and Edge.
   * A solution to this would be patching AnkiConnect to add a setting in the config to set the `Access-Control-Allow-Private-Network` header to true.
