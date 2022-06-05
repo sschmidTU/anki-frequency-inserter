@@ -257,7 +257,6 @@ class FrequencyInserter {
             }
             const freqExisting = fields[this.ankiFrequencyFieldName].value;
             let freqCorpus = terms_BCCWJ[expression];
-            console.log("freqCorpus for " + expression + ": " + freqCorpus);
             const validFrequency = (frequency) => frequency >= 0;
             const furigana = fields[this.ankiFuriganaFieldName]?.value;
             if (!validFrequency(freqCorpus) && furigana && this.tryFuriganaFieldAsKey) {
