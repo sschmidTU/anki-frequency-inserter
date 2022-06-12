@@ -57,12 +57,12 @@ class FrequencyInserter {
             this.corpusUsed = this.CorpusEnum.Innocent;
             this.corpusUsedInfo = this.CorpusInfo.Innocent;
             this.ankiFrequencyFieldName = "FrequencyInnocent"; // may be overwritten later
-            this.corpusObject = window.innocent_terms_complete;
+            this.corpusDict = window.innocent_terms_complete;
         } else if (window.terms_BCCWJ) { // loaded via script in index_BCCWJ.html
             this.corpusUsed = this.CorpusEnum.BCCWJ;
             this.corpusUsedInfo = this.CorpusInfo.BCCWJ;
             this.ankiFrequencyFieldName = "FrequencyBCCWJ"; // may be overwritten later
-            this.corpusObject = window.terms_BCCWJ;
+            this.corpusDict = window.terms_BCCWJ;
         }
     }
 
@@ -277,7 +277,7 @@ class FrequencyInserter {
     processNotes(notes) {
         let corpusTerms = this.corpusDict;
         if (!corpusTerms) {
-            console.log("error: no corpus loaded (ankiInserter.corpusObject)");
+            console.log("error: no corpus loaded (ankiInserter.corpusDict)");
         }
         let noChangesNotes = [];
         this.notesWithChanges = [];
