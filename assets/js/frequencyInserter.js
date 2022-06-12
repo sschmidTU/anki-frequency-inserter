@@ -275,7 +275,7 @@ class FrequencyInserter {
     }
 
     processNotes(notes) {
-        let corpusTerms = this.corpusDict;
+        const corpusTerms = this.corpusDict;
         if (!corpusTerms) {
             console.log("error: no corpus loaded (ankiInserter.corpusDict)");
         }
