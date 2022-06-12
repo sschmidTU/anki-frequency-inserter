@@ -440,3 +440,7 @@ pre code:not(.language-r) {
 .logbox.expandInfobox {
   height: 100px; /* infobox needs less height */
 }
+
+.testFrequencyAnswer {
+  font-style: italic;
+}

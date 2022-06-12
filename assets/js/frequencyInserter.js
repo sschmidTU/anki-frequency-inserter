@@ -13,6 +13,7 @@ class FrequencyInserter {
             display_name: "BCCWJ corpus",
         }
     };
+    corpusDict = {}; // e.g. corpusDict["古い"] = 794. (loaded in checkCorpus())
     ankiConnectVersion = 6;
     ankiConnectUrl = "http://localhost:8765";
     ankiFuriganaFieldName = "Furigana";
@@ -56,10 +57,12 @@ class FrequencyInserter {
             this.corpusUsed = this.CorpusEnum.Innocent;
             this.corpusUsedInfo = this.CorpusInfo.Innocent;
             this.ankiFrequencyFieldName = "FrequencyInnocent"; // may be overwritten later
+            this.corpusObject = window.innocent_terms_complete;
         } else if (window.terms_BCCWJ) { // loaded via script in index_BCCWJ.html
             this.corpusUsed = this.CorpusEnum.BCCWJ;
             this.corpusUsedInfo = this.CorpusInfo.BCCWJ;
             this.ankiFrequencyFieldName = "FrequencyBCCWJ"; // may be overwritten later
+            this.corpusObject = window.terms_BCCWJ;
         }
     }
 
@@ -107,6 +110,23 @@ class FrequencyInserter {
         const executeBtn = document.getElementById("updateCardsBtn");
         executeBtn.onclick = async function() {
             await self.executeChanges(self);
+        }
+
+        const testFrequencyInput = document.getElementById("testFrequencyFieldName");
+        if (testFrequencyInput) {
+            this.updateTestFrequencyAnswer();
+            testFrequencyInput.oninput = function() {
+                self.updateTestFrequencyAnswer();
+            }
+        }
+    }
+    
+    updateTestFrequencyAnswer() {
+        const testFrequencyInput = document.getElementById("testFrequencyFieldName");
+        if (testFrequencyInput) {
+            const freqInputString = testFrequencyInput.value;
+            const testFrequencyAnswerField = document.getElementById("testFrequencyAnswer");
+            testFrequencyAnswerField.innerText = this.corpusDict[freqInputString];
         }
     }
 
@@ -255,13 +275,9 @@ class FrequencyInserter {
     }
 
     processNotes(notes) {
-        let corpusTerms = {};
-        if (this.corpusUsed === this.CorpusEnum.Innocent) {
-            corpusTerms = innocent_terms_complete;
-        } else if (this.corpusUsed === this.CorpusEnum.BCCWJ) {
-            corpusTerms = terms_BCCWJ;
-        } else {
-            console.log("error: corpusUsed not handled in processNotes()");
+        let corpusTerms = this.corpusDict;
+        if (!corpusTerms) {
+            console.log("error: no corpus loaded (ankiInserter.corpusObject)");
         }
         let noChangesNotes = [];
         this.notesWithChanges = [];
