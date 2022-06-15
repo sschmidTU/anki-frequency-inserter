@@ -124,9 +124,10 @@ class FrequencyInserter {
     updateTestFrequencyAnswer() {
         const testFrequencyInput = document.getElementById("testFrequencyFieldName");
         if (testFrequencyInput) {
-            const freqInputString = testFrequencyInput.value;
+            let freqInputString = testFrequencyInput.value;
+
             const testFrequencyAnswerField = document.getElementById("testFrequencyAnswer");
-            testFrequencyAnswerField.innerText = this.corpusDict[freqInputString];
+            testFrequencyAnswerField.innerText = this.findFrequencyFor(freqInputString);
         }
     }
 
@@ -314,20 +315,9 @@ class FrequencyInserter {
                 continue;
             }
             const freqExisting = fields[this.ankiFrequencyFieldName].value;
-            let freqCorpus = corpusTerms[expression];
-            const validFrequency = (frequency) => frequency >= 0;
             const furigana = fields[this.ankiFuriganaFieldName]?.value;
-            if (!validFrequency(freqCorpus) && furigana && this.tryFuriganaFieldAsKey) {
-                const furiganaStripped = furigana.replaceAll(/<rt>.*<\/rt>/g, "").replaceAll(/<\/?ruby>/g, "");
-                freqCorpus = corpusTerms[furiganaStripped];
-            }
-            if (!validFrequency(freqCorpus)) {
-                const expressionStripped = this.stripHtml(expression);
-                // if (frontStripped !== front) {
-                //     console.log("front that had html: " + frontStripped);
-                // }
-                freqCorpus = corpusTerms[expressionStripped];
-            }
+            const freqCorpus = this.findFrequencyFor(expression, furigana);
+            const validFrequency = (frequency) => frequency >= 0;
             if (!validFrequency(freqCorpus)) {
                 noFreqFoundCount++;
                 tableHtmlNoFreqFound += "<tr>" +
@@ -398,6 +388,34 @@ class FrequencyInserter {
         }
 
         this.infoBox.innerText += " done."
+    }
+
+    findFrequencyFor(expression, furigana = undefined) {
+        const corpusTerms = this.corpusDict;
+        let freqCorpus = corpusTerms[expression];
+        const validFrequency = (frequency) => frequency >= 0;
+        // try converting from/to hiragana/katakana
+        if (!validFrequency(freqCorpus)) {
+            if (wanakana.isKatakana(expression)) {
+                freqCorpus = corpusTerms[wanakana.toHiragana(expression)]
+            } else if (wanakana.isHiragana(expression)) {
+                freqCorpus = corpusTerms[wanakana.toKatakana(expression)];
+            }
+        }
+        // try furigana
+        if (!validFrequency(freqCorpus) && furigana && this.tryFuriganaFieldAsKey) {
+            const furiganaStripped = furigana.replaceAll(/<rt>.*<\/rt>/g, "").replaceAll(/<\/?ruby>/g, "");
+            freqCorpus = corpusTerms[furiganaStripped];
+        }
+        // try stripping html
+        if (!validFrequency(freqCorpus)) {
+            const expressionStripped = this.stripHtml(expression);
+            // if (frontStripped !== front) {
+            //     console.log("front that had html: " + frontStripped);
+            // }
+            freqCorpus = corpusTerms[expressionStripped];
+        }
+        return freqCorpus; // either undefined or a number >= 0
     }
 
     setExpressionFieldName(name, updateUI = false) {
