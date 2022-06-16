@@ -343,8 +343,8 @@ th, td {
 td div {
   resize: none;
   width: auto;
-  min-width: 50px;
-  max-width: 100px;
+  min-width: 70px;
+  max-width: 150px;
   overflow: auto;
   display: block;
   padding-right: 0.2em;

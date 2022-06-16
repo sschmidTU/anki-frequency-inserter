@@ -336,7 +336,7 @@ class FrequencyInserter {
                     // escape html
                     freqOld = freqOld.replaceAll("&","&amp;").replaceAll("<","&lt;");
                     tableHtmlChanges += "<tr>" +
-                        `<td>${expression}</td>` +
+                        `<td><div>${expression}</div></td>` +
                         `<td>${freqCorpus}</td>` +
                         `<td>${freqOld}</td>` +
                         "</tr>";
