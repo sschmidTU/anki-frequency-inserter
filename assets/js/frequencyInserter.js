@@ -16,16 +16,18 @@ class FrequencyInserter {
     corpusDict = {}; // e.g. corpusDict["古い"] = 794. (loaded in checkCorpus())
     ankiConnectVersion = 6;
     ankiConnectUrl = "http://localhost:8765";
-    ankiFuriganaFieldName = "Furigana";
-    ankiFrequencyFieldName = "FrequencyInnocent"; // see setFrequencyFieldName()
     /** name of the field in Anki that's used to look up the frequency.
-     * "expression" is more precise than "word", but we'll go for the shorter term.
+     * "expression" is more precise than "word".
      */
     ankiExpressionFieldName = "Front"; // could also be "Expression" etc., depending on your Anki deck setup
+    ankiFuriganaFieldName = "Furigana";
+    ankiFrequencyFieldName = "FrequencyInnocent"; // see setFrequencyFieldName()
+    ankiReadingFieldName = "Reading";
     ankiSearchQuery = `${this.ankiFrequencyFieldName}:*`; // can be modified by user.
     ankiQueryAddition = ""; // extends the anki query, e.g. this could be "deck:MyJPDeck".
     corpusUsed = this.CorpusEnum.Innocent; // will be updated/checked later
     corpusUsedInfo = this.CorpusInfo.Innocent;
+    tryReadingFieldAsKey = false;
     tryFuriganaFieldAsKey = true;
     connectPermissionGranted = false;
     notesWithChanges = [];
@@ -34,8 +36,7 @@ class FrequencyInserter {
     // HTML stuff:
     expressionInput;
     freqNameInput;
-    optionUpdateButton;
-    optionsUpdateToast;
+    tryReadingCheckbox;
     infoBox;
     freqNewBox;
     freqNewBoxHeader;
@@ -67,15 +68,20 @@ class FrequencyInserter {
     }
 
     setupHtmlElements() {
+        const self = this; // `this` isn't available in anonymous functions.
         this.expressionInput = document.getElementById("expressionFieldName");
-        this.expressionInput.value = this.ankiExpressionFieldName;
+        if (this.expressionInput) {
+            this.expressionInput.value = this.ankiExpressionFieldName;
+            this.expressionInput.oninput = function() {
+                self.setExpressionFieldName(self.expressionInput.value);
+            }
+        }
         this.freqNameInput = document.getElementById("freqFieldName");
-        this.freqNameInput.value = this.ankiFrequencyFieldName;
-        this.optionUpdateButton = document.getElementById("optionUpdateBtn");
-        this.optionsUpdateToast = document.getElementById("optionsUpdateToast");
-        const self = this;
-        this.optionUpdateButton.onclick = async function() {
-            self.updateOptions();
+        if (this.freqNameInput) {
+            this.freqNameInput.value = this.ankiFrequencyFieldName;
+            this.freqNameInput.oninput = function() {
+                self.setFrequencyFieldName(self.freqNameInput.value);
+            }
         }
 
         const params = this.getUrlParameters();
@@ -111,6 +117,16 @@ class FrequencyInserter {
         executeBtn.onclick = async function() {
             await self.executeChanges(self);
         }
+        this.tryReadingCheckbox = document.getElementById("checkboxTryReading");
+        if (this.tryReadingCheckbox) {
+            this.tryReadingCheckbox.oninput = function() {
+                self.tryReadingFieldAsKey = self.tryReadingCheckbox.checked;
+            }
+            if (params.tryReadingField !== '0') {
+                this.tryReadingCheckbox.checked = true;
+            }
+            this.tryReadingFieldAsKey = this.tryReadingCheckbox.checked;
+        }
 
         const testFrequencyInput = document.getElementById("testFrequencyFieldName");
         if (testFrequencyInput) {
@@ -129,18 +145,6 @@ class FrequencyInserter {
             const testFrequencyAnswerField = document.getElementById("testFrequencyAnswer");
             testFrequencyAnswerField.innerText = this.findFrequencyFor(freqInputString);
         }
-    }
-
-    updateOptions() {
-        // TODO validate fields
-        this.setExpressionFieldName(this.expressionInput.value);
-        this.setFrequencyFieldName(this.freqNameInput.value);
-        this.optionsUpdateToast.hidden = false;
-        setTimeout(function() {
-            this.optionsUpdateToast.hidden = true;
-        }, 2000);
-        //this.infoBox.innerText = "Options updated!\n" + this.infoBox.innerText;
-        //this.infoBox.classList.add("expand");
     }
 
     /** Executes the changes (after a click on 'Update cards') that were found after the 'Connect' click. */
@@ -315,8 +319,9 @@ class FrequencyInserter {
                 continue;
             }
             const freqExisting = fields[this.ankiFrequencyFieldName].value;
+            const reading = fields[this.ankiReadingFieldName]?.value;
             const furigana = fields[this.ankiFuriganaFieldName]?.value;
-            const freqCorpus = this.findFrequencyFor(expression, furigana);
+            const freqCorpus = this.findFrequencyFor(expression, reading, furigana);
             const validFrequency = (frequency) => frequency >= 0;
             if (!validFrequency(freqCorpus)) {
                 noFreqFoundCount++;
@@ -390,11 +395,11 @@ class FrequencyInserter {
         this.infoBox.innerText += " done."
     }
 
-    findFrequencyFor(expression, furigana = undefined) {
+    findFrequencyFor(expression, reading = undefined, furigana = undefined) {
         const corpusTerms = this.corpusDict;
         let freqCorpus = corpusTerms[expression];
         const validFrequency = (frequency) => frequency >= 0;
-        // try converting from/to hiragana/katakana
+        // try converting from/to hiragana/katakana. e.g. InnocentCorpus has only ニコニコ, BCCWJ has only にこにこ.
         if (!validFrequency(freqCorpus)) {
             if (wanakana.isKatakana(expression)) {
                 freqCorpus = corpusTerms[wanakana.toHiragana(expression)]
@@ -402,9 +407,19 @@ class FrequencyInserter {
                 freqCorpus = corpusTerms[wanakana.toKatakana(expression)];
             }
         }
+        // try reading
+        if (!validFrequency(freqCorpus) && reading && this.tryReadingFieldAsKey) {
+            freqCorpus = corpusTerms[reading];
+            // note that this can give some misleading frequencies, e.g. 盗る (とる, "steal" nuance of 取る "to take").
+            //   取る is the 2396th most common word in BCCWJ, but saying the same for 盗る would be misleading.
+            //   on the other hand, this is not a common case, and it finds a lot of correct frequencies like for といった instead of と言った.
+        }
         // try furigana
         if (!validFrequency(freqCorpus) && furigana && this.tryFuriganaFieldAsKey) {
             const furiganaStripped = furigana.replaceAll(/<rt>.*<\/rt>/g, "").replaceAll(/<\/?ruby>/g, "");
+            // TODO ^ this returns the kanji version, not the reading.
+            //   though this does fix cases where the user modified the expression field,
+            //   and we don't always want to search by reading, see above.
             freqCorpus = corpusTerms[furiganaStripped];
         }
         // try stripping html
