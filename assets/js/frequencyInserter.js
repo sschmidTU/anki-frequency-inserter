@@ -67,86 +67,6 @@ class FrequencyInserter {
         }
     }
 
-    setupHtmlElements() {
-        const self = this; // `this` isn't available in anonymous functions.
-        this.expressionInput = document.getElementById("expressionFieldName");
-        if (this.expressionInput) {
-            this.expressionInput.value = this.ankiExpressionFieldName;
-            this.expressionInput.oninput = function() {
-                self.setExpressionFieldName(self.expressionInput.value);
-            }
-        }
-        this.freqNameInput = document.getElementById("freqFieldName");
-        if (this.freqNameInput) {
-            this.freqNameInput.value = this.ankiFrequencyFieldName;
-            this.freqNameInput.oninput = function() {
-                self.setFrequencyFieldName(self.freqNameInput.value);
-            }
-        }
-
-        const params = this.getUrlParameters();
-        if (params.expressionFieldName) {
-            this.setExpressionFieldName(params.expressionFieldName, true);
-        }
-        if (params.frequencyFieldName) {
-            this.setFrequencyFieldName(params.frequencyFieldName, true);
-        }
-        if (params.freqFieldName) {
-            this.setFrequencyFieldName(params.freqFieldName, true);
-        }
-
-        this.infoBox = document.getElementById("infoBox");
-        this.infoBox.innerHTML = "Please click <i>Connect to AnkiConnect</i>. It doesn't update your cards yet, you'll get a preview below.<br>" +
-            "Please accept the connection in Anki after clicking (once).";
-        this.freqNewBox = document.getElementById("notesFreqNewBox");
-        this.freqNewBoxHeader = document.getElementById("notesFreqNewBoxHeader");
-        this.changesBox = document.getElementById("changesBox");
-        this.changesBoxHeader = document.getElementById("changesBoxHeader");
-        this.noFreqFoundBox = document.getElementById("noFreqFoundBox");
-        this.noFreqFoundBoxHeader = document.getElementById("noFreqFoundBoxHeader");
-        this.noChangesBox = document.getElementById("noChangesBox");
-        this.noChangesBoxHeader = document.getElementById("noChangesBoxHeader");
-        this.updatedBox = document.getElementById("updatedBox");
-        this.updatedBoxHeader = document.getElementById("updatedBoxHeader");
-        const connectBtn = document.getElementById("connectBtn");
-        connectBtn.onclick = async function() {
-            await self.connectClick();
-            //await self.testEmptyCardsError();
-        };
-        const executeBtn = document.getElementById("updateCardsBtn");
-        executeBtn.onclick = async function() {
-            await self.executeChanges(self);
-        }
-        this.tryReadingCheckbox = document.getElementById("checkboxTryReading");
-        if (this.tryReadingCheckbox) {
-            this.tryReadingCheckbox.oninput = function() {
-                self.tryReadingFieldAsKey = self.tryReadingCheckbox.checked;
-            }
-            if (params.tryReadingField !== '0') {
-                this.tryReadingCheckbox.checked = true;
-            }
-            this.tryReadingFieldAsKey = this.tryReadingCheckbox.checked;
-        }
-
-        const testFrequencyInput = document.getElementById("testFrequencyFieldName");
-        if (testFrequencyInput) {
-            this.updateTestFrequencyAnswer();
-            testFrequencyInput.oninput = function() {
-                self.updateTestFrequencyAnswer();
-            }
-        }
-    }
-    
-    updateTestFrequencyAnswer() {
-        const testFrequencyInput = document.getElementById("testFrequencyFieldName");
-        if (testFrequencyInput) {
-            let freqInputString = testFrequencyInput.value;
-
-            const testFrequencyAnswerField = document.getElementById("testFrequencyAnswer");
-            testFrequencyAnswerField.innerText = this.findFrequencyFor(freqInputString);
-        }
-    }
-
     /** Executes the changes (after a click on 'Update cards') that were found after the 'Connect' click. */
     async executeChanges() {
         if (!this.connectPermissionGranted) {
@@ -533,6 +453,86 @@ class FrequencyInserter {
           params[pair[0]] = decodeURIComponent(pair[1]);
         }
         return params;
+    }
+
+    setupHtmlElements() {
+        const self = this; // `this` isn't available in anonymous functions.
+        this.expressionInput = document.getElementById("expressionFieldName");
+        if (this.expressionInput) {
+            this.expressionInput.value = this.ankiExpressionFieldName;
+            this.expressionInput.oninput = function() {
+                self.setExpressionFieldName(self.expressionInput.value);
+            }
+        }
+        this.freqNameInput = document.getElementById("freqFieldName");
+        if (this.freqNameInput) {
+            this.freqNameInput.value = this.ankiFrequencyFieldName;
+            this.freqNameInput.oninput = function() {
+                self.setFrequencyFieldName(self.freqNameInput.value);
+            }
+        }
+
+        const params = this.getUrlParameters();
+        if (params.expressionFieldName) {
+            this.setExpressionFieldName(params.expressionFieldName, true);
+        }
+        if (params.frequencyFieldName) {
+            this.setFrequencyFieldName(params.frequencyFieldName, true);
+        }
+        if (params.freqFieldName) {
+            this.setFrequencyFieldName(params.freqFieldName, true);
+        }
+
+        this.infoBox = document.getElementById("infoBox");
+        this.infoBox.innerHTML = "Please click <i>Connect to AnkiConnect</i>. It doesn't update your cards yet, you'll get a preview below.<br>" +
+            "Please accept the connection in Anki after clicking (once).";
+        this.freqNewBox = document.getElementById("notesFreqNewBox");
+        this.freqNewBoxHeader = document.getElementById("notesFreqNewBoxHeader");
+        this.changesBox = document.getElementById("changesBox");
+        this.changesBoxHeader = document.getElementById("changesBoxHeader");
+        this.noFreqFoundBox = document.getElementById("noFreqFoundBox");
+        this.noFreqFoundBoxHeader = document.getElementById("noFreqFoundBoxHeader");
+        this.noChangesBox = document.getElementById("noChangesBox");
+        this.noChangesBoxHeader = document.getElementById("noChangesBoxHeader");
+        this.updatedBox = document.getElementById("updatedBox");
+        this.updatedBoxHeader = document.getElementById("updatedBoxHeader");
+        const connectBtn = document.getElementById("connectBtn");
+        connectBtn.onclick = async function() {
+            await self.connectClick();
+            //await self.testEmptyCardsError();
+        };
+        const executeBtn = document.getElementById("updateCardsBtn");
+        executeBtn.onclick = async function() {
+            await self.executeChanges(self);
+        }
+        this.tryReadingCheckbox = document.getElementById("checkboxTryReading");
+        if (this.tryReadingCheckbox) {
+            this.tryReadingCheckbox.oninput = function() {
+                self.tryReadingFieldAsKey = self.tryReadingCheckbox.checked;
+            }
+            if (params.tryReadingField !== '0') {
+                this.tryReadingCheckbox.checked = true;
+            }
+            this.tryReadingFieldAsKey = this.tryReadingCheckbox.checked;
+        }
+
+        const testFrequencyInput = document.getElementById("testFrequencyFieldName");
+        if (testFrequencyInput) {
+            this.updateTestFrequencyAnswer();
+            testFrequencyInput.oninput = function() {
+                self.updateTestFrequencyAnswer();
+            }
+        }
+    }
+    
+    updateTestFrequencyAnswer() {
+        const testFrequencyInput = document.getElementById("testFrequencyFieldName");
+        if (testFrequencyInput) {
+            let freqInputString = testFrequencyInput.value;
+
+            const testFrequencyAnswerField = document.getElementById("testFrequencyAnswer");
+            testFrequencyAnswerField.innerText = this.findFrequencyFor(freqInputString);
+        }
     }
 }
 
