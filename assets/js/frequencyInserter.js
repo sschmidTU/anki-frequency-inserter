@@ -20,8 +20,8 @@ class FrequencyInserter {
      * "expression" is more precise than "word".
      */
     ankiExpressionFieldName = "Front"; // could also be "Expression" etc., depending on your Anki deck setup
-    ankiFuriganaFieldName = "Furigana";
     ankiFrequencyFieldName = "FrequencyInnocent"; // see setFrequencyFieldName()
+    ankiFuriganaFieldName = "Furigana";
     ankiReadingFieldName = "Reading";
     ankiSearchQuery = `${this.ankiFrequencyFieldName}:*`; // can be modified by user.
     ankiQueryAddition = ""; // extends the anki query, e.g. this could be "deck:MyJPDeck".
