@@ -23,7 +23,7 @@ class FrequencyInserter {
     ankiFrequencyFieldName = "FrequencyInnocent"; // see setFrequencyFieldName()
     ankiFuriganaFieldName = "Furigana";
     ankiReadingFieldName = "Reading";
-    ankiSearchQuery = `${this.ankiFrequencyFieldName}:*`; // can be modified by user.
+    ankiSearchQuery = `"${this.ankiFrequencyFieldName}:*"`; // can be modified by user.
     ankiQueryAddition = ""; // extends the anki query, e.g. this could be "deck:MyJPDeck".
     corpusUsed = this.CorpusEnum.Innocent; // will be updated/checked later
     corpusUsedInfo = this.CorpusInfo.Innocent;
@@ -362,7 +362,7 @@ class FrequencyInserter {
 
     setFrequencyFieldName(name, updateUI = false) {
         this.ankiFrequencyFieldName = name;
-        this.ankiSearchQuery = `${name}:*`;
+        this.ankiSearchQuery = `"${name}:*"`;
         if (updateUI) {
             this.freqNameInput.value = name;
         }
