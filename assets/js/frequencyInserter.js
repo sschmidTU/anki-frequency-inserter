@@ -41,6 +41,7 @@ class FrequencyInserter {
     freqNameInput;
     tryReadingCheckbox;
     removeInvalidEntriesCheckbox;
+    updateIncorrectFrequenciesCheckbox;
     infoBox;
     freqNewBox;
     freqNewBoxHeader;
@@ -264,7 +265,7 @@ class FrequencyInserter {
                 if (freqExisting === "") {
                     this.notesWithoutFreq.push(note);
                     tableHtmlNew += `<tr><td><div>${expression}</div></td><td><div>${freqCorpus}</div></td></tr>`;
-                } else if (correctFrequencyRegex.test(freqExisting) && Number(freqExisting) === freqCorpus && freqCorpus > 0 || !this.updateIncorrectFrequencies) {
+                } else if (!this.updateIncorrectFrequencies || correctFrequencyRegex.test(freqExisting) && Number(freqExisting) === freqCorpus && freqCorpus > 0) {
                     noChangesNotes.push(note);
                     tableHtmlNoChanges += `<tr><div><td>${expression}</div></td><td><div>${freqExisting}</div></td></tr>`;
                 } else { // old frequency wasn't correct and will be updated
@@ -554,6 +555,16 @@ class FrequencyInserter {
                 this.removeInvalidEntriesCheckbox.checked = true;
             }
             this.removeInvalidEntries = this.removeInvalidEntriesCheckbox.checked;
+        }
+        this.updateIncorrectFrequenciesCheckbox = document.getElementById("checkboxUpdateIncorrectEntries");
+        if (this.updateIncorrectFrequenciesCheckbox) {
+            this.updateIncorrectFrequenciesCheckbox.oninput = function() {
+                self.updateIncorrectFrequencies = self.updateIncorrectFrequenciesCheckbox.checked;
+            }
+            if (params.updateIncorrectFrequencies === '0') {
+                this.updateIncorrectFrequenciesCheckbox.checked = false;
+            }
+            this.updateIncorrectFrequencies = this.updateIncorrectFrequenciesCheckbox.checked;
         }
 
         const testFrequencyInput = document.getElementById("testFrequencyFieldName");

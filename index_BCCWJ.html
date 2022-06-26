@@ -43,6 +43,13 @@ Try Reading field for frequency if none found for expression</label>
         title="Delete the contents of the frequency field for notes that don't have a frequency found using current settings.
 This could happen if you for example used the 'Try Reading field' option in the past, but want to revert that.">
 Remove frequency entries that are not found using current settings</label>
+<br>
+  <input type="checkbox" id="checkboxUpdateIncorrectEntries" name="checkboxUpdateIncorrectEntries" checked="true">
+      <label for="checkboxUpdateIncorrectEntries" id="labelUpdateIncorrectEntries"
+        title="Update frequencies that are a correctly formatted number but incorrect according to the frequency found using current settings.
+For example, we will anyways update a frequency like '* FrequencyInnocent: 520' as returned by Yomichan,
+but a frequency like '520' will only be changed with this option enabled.">
+Update frequency entries that are incorrect according to current settings</label>
 <!--/form-->
 <br>
 
@@ -80,7 +87,7 @@ Sends the changes above to AnkiConnect, finally updating your Anki cards (notes)
 
 <div id="foot">
     <p>@ 2022-06 <a href="https://github.com/sschmidTU/anki-frequency-inserter">
-Anki Frequency Inserter v1.2.6.2</a> by <a href="https://community.wanikani.com/t/anki-word-frequency-inserter-learn-most-common-words-first/53407">Saimin@WK</a>
+Anki Frequency Inserter v1.2.7.0</a> by <a href="https://community.wanikani.com/t/anki-word-frequency-inserter-learn-most-common-words-first/53407">Saimin@WK</a>
 <br><span title="The BCCWJ corpus (Contemporary Written Japanese) uses relative frequency: 100 = 100th most common word">
 using BCCWJ corpus
 </span>
