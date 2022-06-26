@@ -7,10 +7,12 @@ class FrequencyInserter {
         Innocent: {
             name: "InnocentCorpus",
             display_name: "InnocentCorpus",
+            lowerIsMoreFrequent: false
         },
         BCCWJ: {
             name: "BCCWJ corpus",
             display_name: "BCCWJ corpus",
+            lowerIsMoreFrequent: true
         }
     };
     corpusDict = {}; // e.g. corpusDict["古い"] = 794. (loaded in checkCorpus())
@@ -29,6 +31,9 @@ class FrequencyInserter {
     corpusUsedInfo = this.CorpusInfo.Innocent;
     tryReadingFieldAsKey = false;
     tryFuriganaFieldAsKey = true;
+    tryStrippingHtml = true;
+    tryConvertingHiraganaToKatakanaOrOpposite = true;
+    takeMostFrequentOfAllForms = true; // take most frequent frequency from all forms that are enabled: expression, reading, furigana, hiragana/katakana, etc
     removeInvalidEntries = false;
     updateIncorrectFrequencies = true;
     connectPermissionGranted = false;
@@ -42,6 +47,7 @@ class FrequencyInserter {
     tryReadingCheckbox;
     removeInvalidEntriesCheckbox;
     updateIncorrectFrequenciesCheckbox;
+    takeMostFrequentCheckbox;
     infoBox;
     freqNewBox;
     freqNewBoxHeader;
@@ -345,40 +351,66 @@ class FrequencyInserter {
 
     findFrequencyFor(expression, reading = undefined, furigana = undefined) {
         const corpusTerms = this.corpusDict;
-        let freqCorpus = corpusTerms[expression];
-        const validFrequency = (frequency) => frequency >= 0;
-        // try converting from/to hiragana/katakana. e.g. InnocentCorpus has only ニコニコ, BCCWJ has only にこにこ.
-        if (!validFrequency(freqCorpus)) {
-            if (wanakana.isKatakana(expression)) {
-                freqCorpus = corpusTerms[wanakana.toHiragana(expression)]
-            } else if (wanakana.isHiragana(expression)) {
-                freqCorpus = corpusTerms[wanakana.toKatakana(expression)];
-            }
+        let freqExpression = corpusTerms[expression];
+        let freqReadingField;
+        let freqFurigana;
+        let freqOtherKanaVersion;
+        let freqStrippedHtml
+        if (expression === "如何") {
+            console.log("break");
         }
-        // try reading
-        if (!validFrequency(freqCorpus) && reading && this.tryReadingFieldAsKey) {
-            freqCorpus = corpusTerms[reading];
-            // note that this can give some misleading frequencies, e.g. 盗る (とる, "steal" nuance of 取る "to take").
-            //   取る is the 2396th most common word in BCCWJ, but saying the same for 盗る would be misleading.
-            //   on the other hand, this is not a common case, and it finds a lot of correct frequencies like for といった instead of と言った.
-        }
-        // try furigana
-        if (!validFrequency(freqCorpus) && furigana && this.tryFuriganaFieldAsKey) {
-            const furiganaStripped = furigana.replaceAll(/<rt>.*?<\/rt>/g, "").replaceAll(/<\/?ruby>/g, ""); // .*? need "lazy" search, not greedy, to find shortest match
-            // TODO ^ this returns the kanji version, not the reading.
-            //   though this does fix cases where the user modified the expression field,
-            //   and we don't always want to search by reading, see above.
-            freqCorpus = corpusTerms[furiganaStripped];
-        }
-        // try stripping html
-        if (!validFrequency(freqCorpus)) {
+        if (this.tryStrippingHtml) {
             const expressionStripped = this.stripHtml(expression);
             // if (frontStripped !== front) {
             //     console.log("front that had html: " + frontStripped);
             // }
-            freqCorpus = corpusTerms[expressionStripped];
+            freqStrippedHtml = corpusTerms[expressionStripped];
         }
-        return freqCorpus; // either undefined or a number >= 0
+        if (furigana && this.tryFuriganaFieldAsKey) {
+            const furiganaStripped = furigana.replaceAll(/<rt>.*?<\/rt>/g, "").replaceAll(/<\/?ruby>/g, ""); // .*? need "lazy" search, not greedy, to find shortest match
+            // TODO ^ this returns the kanji version, not the reading.
+            //   though this does fix cases where the user modified the expression field,
+            //   and we don't always want to search by reading, see above.
+            freqFurigana = corpusTerms[furiganaStripped];
+        }
+        if (reading && this.tryReadingFieldAsKey) {
+            freqReadingField = corpusTerms[reading];
+            // note that this can give some misleading frequencies, e.g. 盗る (とる, "steal" nuance of 取る "to take").
+            //   取る is the 2396th most common word in BCCWJ, but saying the same for 盗る would be misleading.
+            //   on the other hand, this is not a common case, and it finds a lot of correct frequencies like for といった instead of と言った.
+        }
+        if (this.tryConvertingHiraganaToKatakanaOrOpposite) {
+            // try converting from/to hiragana/katakana. e.g. InnocentCorpus has only ニコニコ, BCCWJ has only にこにこ.
+            if (wanakana.isKatakana(expression)) {
+                freqOtherKanaVersion = corpusTerms[wanakana.toHiragana(expression)]
+            } else if (wanakana.isHiragana(expression)) {
+                freqOtherKanaVersion = corpusTerms[wanakana.toKatakana(expression)];
+            }
+        }
+        const frequencies = [freqExpression, freqReadingField, freqFurigana, freqOtherKanaVersion, freqStrippedHtml];
+        if (this.takeMostFrequentOfAllForms) {
+            let mostFrequentFrequency = freqExpression;
+            let minOrMax = Math.max;
+            if (this.corpusUsedInfo.lowerIsMoreFrequent) {
+                minOrMax = Math.min;
+            }
+            for (const frequency of frequencies) {
+                if (!mostFrequentFrequency) {
+                    mostFrequentFrequency = frequency
+                } else if (frequency) {
+                    mostFrequentFrequency = minOrMax(frequency, mostFrequentFrequency);
+                }
+            }
+            return mostFrequentFrequency;
+        } else {
+            const validFrequency = (frequency) => frequency >= 0;
+            for (const frequency in frequencies) {
+                if (validFrequency(frequency)) {
+                    return frequency;
+                }
+            }
+        }
+        return freqExpression; // either undefined or a number >= 0
     }
 
     setExpressionFieldName(name, updateUI = false) {
@@ -565,6 +597,16 @@ class FrequencyInserter {
                 this.updateIncorrectFrequenciesCheckbox.checked = false;
             }
             this.updateIncorrectFrequencies = this.updateIncorrectFrequenciesCheckbox.checked;
+        }
+        this.takeMostFrequentCheckbox = document.getElementById("checkboxTakeMostFrequent");
+        if (this.takeMostFrequentCheckbox) {
+            this.takeMostFrequentCheckbox.oninput = function() {
+                self.takeMostFrequentOfAllForms = self.takeMostFrequentCheckbox.checked;
+            }
+            if (params.takeMostFrequent === '0') {
+                this.takeMostFrequentCheckbox.checked = false;
+            }
+            this.takeMostFrequentOfAllForms = this.takeMostFrequentCheckbox.checked;
         }
 
         const testFrequencyInput = document.getElementById("testFrequencyFieldName");
