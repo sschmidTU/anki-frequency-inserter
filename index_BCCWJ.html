@@ -35,7 +35,14 @@ Inserts Japanese word frequencies into a preexisting field (<i>FrequencyBCCWJ</i
   <input type="checkbox" id="checkboxTryReading" name="checkboxTryReading" value="false">
       <label for="checkboxTryReading" id="labelTryReading"
         title="Try the reading field of your notes if no frequency was found for the Front/Expression field.
-This finds more frequencies, but in a few cases can be misleading, e.g. 盗る (uncommon form of 取る/とる, 'steal' nuance of 'to take') maybe shouldn't show the frequency of 取る/とる (2396th most common word).">Try Reading field for frequency if none found for expression</label>
+This finds more frequencies, but in a few cases can be misleading, e.g. 盗る (uncommon form of 取る/とる, 'steal' nuance of 'to take') maybe shouldn't show the frequency of 取る/とる (2396th most common word).">
+Try Reading field for frequency if none found for expression</label>
+<br>
+  <input type="checkbox" id="checkboxRemoveInvalidEntries" name="checkboxRemoveInvalidEntries" value="false">
+      <label for="checkboxRemoveInvalidEntries" id="labelRemoveInvalidEntries"
+        title="Delete the contents of the frequency field for notes that don't have a frequency found using current settings.
+This could happen if you for example used the 'Try Reading field' option in the past, but want to revert that.">
+Remove frequency entries that are not found using current settings</label>
 <!--/form-->
 <br>
 
@@ -54,6 +61,9 @@ Changes are only done to your cards when you click "Update cards".'>Connect to A
 <p id="changesBoxHeader">Notes where frequency will be changed:</p>
 <div class="logbox" id="changesBox"></div>
 
+<p id="removalsBoxHeader">Notes where frequency will be removed:</p>
+<div class="logbox" id="removalsBox"></div>
+
 <p id="noFreqFoundBoxHeader">Notes where no frequency was found in BCCWJ Corpus:</p>
 <div class="logbox" id="noFreqFoundBox"></div>
 
@@ -70,7 +80,7 @@ Sends the changes above to AnkiConnect, finally updating your Anki cards (notes)
 
 <div id="foot">
     <p>@ 2022-06 <a href="https://github.com/sschmidTU/anki-frequency-inserter">
-Anki Frequency Inserter v1.2.5.1</a> by <a href="https://community.wanikani.com/t/anki-word-frequency-inserter-learn-most-common-words-first/53407">Saimin@WK</a>
+Anki Frequency Inserter v1.2.6.0</a> by <a href="https://community.wanikani.com/t/anki-word-frequency-inserter-learn-most-common-words-first/53407">Saimin@WK</a>
 <br><span title="The BCCWJ corpus (Contemporary Written Japanese) uses relative frequency: 100 = 100th most common word">
 using BCCWJ corpus
 </span>

@@ -29,19 +29,24 @@ class FrequencyInserter {
     corpusUsedInfo = this.CorpusInfo.Innocent;
     tryReadingFieldAsKey = false;
     tryFuriganaFieldAsKey = true;
+    removeInvalidEntries = false;
     connectPermissionGranted = false;
     notesWithChanges = [];
     notesNoChanges = [];
     notesWithoutFreq = [];
+    notesWithRemoval = [];
     // HTML stuff:
     expressionInput;
     freqNameInput;
     tryReadingCheckbox;
+    removeInvalidEntriesCheckbox;
     infoBox;
     freqNewBox;
     freqNewBoxHeader;
     changesBox;
     changesBoxHeader;
+    removalsBox;
+    removalsBoxHeader;
     noFreqFoundBox;
     noFreqFoundBoxHeader;
     noChangesBox;
@@ -73,7 +78,7 @@ class FrequencyInserter {
             this.infoBox.innerText = "Please connect to AnkiConnect first :)";
             return;
         }
-        if (this.notesWithChanges.length === 0 && this.notesWithoutFreq.length === 0) {
+        if (this.notesWithChanges.length === 0 && this.notesWithoutFreq.length === 0 && this.notesWithRemoval.length === 0) {
             this.infoBox.innerText = `There were no notes with the given frequency and expression fields found that need changes.\n` +
                 "Maybe you need to add the frequency field to your note types, see Usage information above.";
             return;
@@ -94,6 +99,7 @@ class FrequencyInserter {
         const actions = [];
         this.notesWithChanges.forEach((note) => tableHtml += this.addActionFromNote(note, actions, this));
         this.notesWithoutFreq.forEach((note) => tableHtml += this.addActionFromNote(note, actions, this));
+        this.notesWithRemoval.forEach((note) => tableHtml += this.addActionFromNote(note, actions, this));
         tableHtml += "</trbody></table>";
         const totalUpdated = actions.length;
         this.updatedBoxHeader.innerText = `Updated: (${totalUpdated} total)`;
@@ -144,9 +150,10 @@ class FrequencyInserter {
             "action": "updateNoteFields",
             "params": noteParam
         });
+        const freqNewDisplayed = freqNew === "" ? "(removed/empty)" : freqNew;
         return `<tr><td><div>${expression}</div></td>` +
             `<td><div class="longDiv">${id}</div></td>` + // without longDiv this gets cramped
-            `<td><div>${freqNew}</div></td>` +
+            `<td><div>${freqNewDisplayed}</div></td>` +
             `<td><div class="lastDiv">${freqOld}</div></td>` + // without longDiv/lastDiv this gets cramped
             "</tr>";
     }
@@ -207,6 +214,7 @@ class FrequencyInserter {
         let noChangesNotes = [];
         this.notesWithChanges = [];
         this.notesWithoutFreq = [];
+        this.notesWithRemoval = [];
         let noFreqFoundCount = 0;
         const correctFrequencyRegex = /^[0-9]+$/;
         const expressionFieldName = this.ankiExpressionFieldName;
@@ -218,6 +226,8 @@ class FrequencyInserter {
             "<td><div>New Frequency</div></td>" +
             `<td><div class="lastDiv">Old Frequency</div></td>` +
             "</tr>";
+        let tableHtmlRemovals = `<table><tbody><tr class='trHeader'><td><div>${expressionFieldName}</div></td>` +
+            `<td><div>Old Frequency</div></td></tr>`;
         let tableHtmlNoFreqFound = `<table><tbody><tr class='trHeader'><td>${expressionFieldName}</td></tr>`;
         this.infoBox.innerText = "Processing Notes...";
         for (const note of notes) {
@@ -242,7 +252,7 @@ class FrequencyInserter {
             const reading = fields[this.ankiReadingFieldName]?.value;
             const furigana = fields[this.ankiFuriganaFieldName]?.value;
             const freqCorpus = this.findFrequencyFor(expression, reading, furigana);
-            const validFrequency = (frequency) => frequency >= 0;
+            const validFrequency = (frequency) => frequency > 0; // note that Number("") = 0.
             if (!validFrequency(freqCorpus)) {
                 noFreqFoundCount++;
                 tableHtmlNoFreqFound += "<tr>" +
@@ -268,12 +278,19 @@ class FrequencyInserter {
                     this.notesWithChanges.push(note);
                 }
             }
+            const freqOldToRemove = fields[this.ankiFrequencyFieldName].value;
+            if (this.removeInvalidEntries && freqCorpus === undefined && validFrequency(freqOldToRemove)) {
+                note.newFrequency = "";
+                this.notesWithRemoval.push(note);
+                tableHtmlRemovals += `<tr><td><div>${expression}</div></td><td><div>${freqOldToRemove}</div></td></tr>`;
+            }
         } // end for notes
         const tableEnd = "</tbody></table>";
         tableHtmlNoChanges += tableEnd;
         tableHtmlChanges += tableEnd;
         tableHtmlNew += tableEnd;
         tableHtmlNoFreqFound += tableEnd;
+        tableHtmlRemovals += tableEnd;
 
         const freqNewlyAddedCount = this.notesWithoutFreq.length;
         this.freqNewBoxHeader.innerText = `Notes where frequency will be newly added: (${freqNewlyAddedCount} total)`;
@@ -310,6 +327,15 @@ class FrequencyInserter {
             this.noFreqFoundBox.classList.add("expand");
         } else {
             this.noFreqFoundBox.classList.remove("expand");
+        }
+
+        const removalsCount = this.notesWithRemoval.length;
+        this.removalsBoxHeader.innerText = "Notes where frequency will be removed: " + `(${removalsCount} total)`;
+        if (removalsCount > 0) {
+            this.removalsBox.innerHTML = tableHtmlRemovals;
+            this.removalsBox.classList.add("expand");
+        } else {
+            this.removalsBox.classList.remove("expand");
         }
 
         this.infoBox.innerText += " done."
@@ -434,6 +460,7 @@ class FrequencyInserter {
         this.noFreqFoundBox.innerHTML = "";
         this.freqNewBox.innerHTML = "";
         this.noChangesBox.innerHTML = "";
+        this.removalsBox.innerHTML = "";
     }
 
     stripHtml(htmlString) {
@@ -490,6 +517,8 @@ class FrequencyInserter {
         this.freqNewBoxHeader = document.getElementById("notesFreqNewBoxHeader");
         this.changesBox = document.getElementById("changesBox");
         this.changesBoxHeader = document.getElementById("changesBoxHeader");
+        this.removalsBox = document.getElementById("removalsBox");
+        this.removalsBoxHeader = document.getElementById("removalsBoxHeader");
         this.noFreqFoundBox = document.getElementById("noFreqFoundBox");
         this.noFreqFoundBoxHeader = document.getElementById("noFreqFoundBoxHeader");
         this.noChangesBox = document.getElementById("noChangesBox");
@@ -510,10 +539,20 @@ class FrequencyInserter {
             this.tryReadingCheckbox.oninput = function() {
                 self.tryReadingFieldAsKey = self.tryReadingCheckbox.checked;
             }
-            if (params.tryReadingField !== '0') {
+            if (params.tryReadingField && params.tryReadingField !== '0') {
                 this.tryReadingCheckbox.checked = true;
             }
             this.tryReadingFieldAsKey = this.tryReadingCheckbox.checked;
+        }
+        this.removeInvalidEntriesCheckbox = document.getElementById("checkboxRemoveInvalidEntries");
+        if (this.removeInvalidEntriesCheckbox) {
+            this.removeInvalidEntriesCheckbox.oninput = function() {
+                self.removeInvalidEntries = self.removeInvalidEntriesCheckbox.checked;
+            }
+            if (params.removeInvalidEntries && params.removeInvalidEntries !== '0') {
+                this.removeInvalidEntriesCheckbox.checked = true;
+            }
+            this.removeInvalidEntries = this.removeInvalidEntriesCheckbox.checked;
         }
 
         const testFrequencyInput = document.getElementById("testFrequencyFieldName");
