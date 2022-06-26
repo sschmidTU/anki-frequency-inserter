@@ -363,7 +363,7 @@ class FrequencyInserter {
         }
         // try furigana
         if (!validFrequency(freqCorpus) && furigana && this.tryFuriganaFieldAsKey) {
-            const furiganaStripped = furigana.replaceAll(/<rt>.*<\/rt>/g, "").replaceAll(/<\/?ruby>/g, "");
+            const furiganaStripped = furigana.replaceAll(/<rt>.*?<\/rt>/g, "").replaceAll(/<\/?ruby>/g, ""); // .*? need "lazy" search, not greedy, to find shortest match
             // TODO ^ this returns the kanji version, not the reading.
             //   though this does fix cases where the user modified the expression field,
             //   and we don't always want to search by reading, see above.
