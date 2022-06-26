@@ -30,6 +30,7 @@ class FrequencyInserter {
     tryReadingFieldAsKey = false;
     tryFuriganaFieldAsKey = true;
     removeInvalidEntries = false;
+    updateIncorrectFrequencies = true;
     connectPermissionGranted = false;
     notesWithChanges = [];
     notesNoChanges = [];
@@ -263,10 +264,10 @@ class FrequencyInserter {
                 if (freqExisting === "") {
                     this.notesWithoutFreq.push(note);
                     tableHtmlNew += `<tr><td><div>${expression}</div></td><td><div>${freqCorpus}</div></td></tr>`;
-                } else if (correctFrequencyRegex.test(freqExisting)) {
+                } else if (correctFrequencyRegex.test(freqExisting) && Number(freqExisting) === freqCorpus && freqCorpus > 0 || !this.updateIncorrectFrequencies) {
                     noChangesNotes.push(note);
                     tableHtmlNoChanges += `<tr><div><td>${expression}</div></td><td><div>${freqExisting}</div></td></tr>`;
-                } else { // old frequency wasn't correct
+                } else { // old frequency wasn't correct and will be updated
                     let freqOld = fields[this.ankiFrequencyFieldName].value;
                     // escape html
                     freqOld = freqOld.replaceAll("&","&amp;").replaceAll("<","&lt;");
