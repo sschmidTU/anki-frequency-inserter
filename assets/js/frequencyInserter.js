@@ -61,6 +61,7 @@ class FrequencyInserter {
     noChangesBoxHeader;
     updatedBox;
     updatedBoxHeader;
+    missingWordsBox;
 
     constructor() {
         this.checkCorpus();
@@ -367,7 +368,7 @@ class FrequencyInserter {
             freqStrippedHtml = corpusTerms[expressionStripped];
         }
         if (furigana && this.tryFuriganaFieldAsKey) {
-            const furiganaStripped = furigana.replaceAll(/<rt>.*?<\/rt>/g, "").replaceAll(/<\/?ruby>/g, ""); // .*? need "lazy" search, not greedy, to find shortest match
+            const furiganaStripped = this.stripFurigana(furigana);
             // TODO ^ this returns the kanji version, not the reading.
             //   though this does fix cases where the user modified the expression field,
             //   and we don't always want to search by reading, see above.
@@ -616,6 +617,14 @@ class FrequencyInserter {
                 self.updateTestFrequencyAnswer();
             }
         }
+
+        this.missingWordsBox = document.getElementById("missingWordsBox");
+        const missingWordsBtn = document.getElementById("missingWordsBtn");
+        if (missingWordsBtn) {
+            missingWordsBtn.onclick = function() {
+                self.updateMissingWords();
+            }
+        }
     }
     
     updateTestFrequencyAnswer() {
@@ -626,6 +635,112 @@ class FrequencyInserter {
             const testFrequencyAnswerField = document.getElementById("testFrequencyAnswer");
             testFrequencyAnswerField.innerText = this.findFrequencyFor(freqInputString);
         }
+    }
+
+    stripFurigana(furigana) {
+        return furigana.replaceAll(/<rt>.*?<\/rt>/g, "").replaceAll(/<\/?ruby>/g, ""); // .*? need "lazy" search, not greedy, to find shortest match
+    }
+
+    async updateMissingWords() {
+        const keys = Object.keys(this.corpusDict);
+        const startFreqInput = document.getElementById("missingWordsStartFreqInput");
+        const startFreq = Number(startFreqInput.value);
+        const endFreqInput = document.getElementById("missingWordsEndFreqInput");
+        const endFreq = Number(endFreqInput.value);
+        const progressLabel = document.getElementById("missingWordsProgressLabel");
+
+        const filterWKVocab = document.getElementById("filterWKWordsCheckbox").checked;
+
+        const missingWordsBox = document.getElementById("missingWordsBox");
+        missingWordsBox.style.height = "400px";
+        missingWordsBox.innerHTML = "";
+        const table = document.createElement("table");
+        const tr = table.insertRow();
+        const headers = ["Frequency","Expression"];
+        for (const header of headers) {
+            const td = tr.insertCell();
+            td.innerHTML = `<b>${header}</b>`;
+        }
+        missingWordsBox.appendChild(table);
+        
+        let foundByFurigana = 0;
+        let foundByKanaConversion = 0;
+        let wkWordsFiltered = 0;
+        if (!window["wk_vocab"]) {
+            window["wk_vocab"] = {};
+        }
+        for (let i = startFreq; i <= endFreq; i++) {
+            const word = keys[i];
+            progressLabel.innerText = `${i - startFreq + 1} / ${endFreq - startFreq + 1}`;
+            if (filterWKVocab) {
+                if (this.isWKWord(word) || this.isWKWord(word.replace("する",""))) {
+                    wkWordsFiltered++;
+                    continue;
+                }
+            }
+
+            let matchingNote;
+            const noteIds = await this.findNotes(word);
+            if (noteIds.length !== 0) {
+                const notes = await this.notesInfo(noteIds);
+                for (const note of notes) {
+                    const expressionField = note.fields[this.ankiExpressionFieldName].value;
+                    let furigana;
+                    if (this.tryFuriganaFieldAsKey) {
+                        furigana = note.fields["Furigana"]?.value;
+                    }
+                    if (filterWKVocab && this.isWKWord(word, furigana)) {
+                        wkWordsFiltered++;
+                        break;
+                    }
+                    if (expressionField === word) {
+                        matchingNote = note;
+                        //console.log(`found note ${i}: ${expressionField}`);
+                        break;
+                    }
+                    if (this.tryFuriganaFieldAsKey && furigana) {
+                        if (word === this.stripFurigana(furigana)) {
+                            matchingNote = note;
+                            //console.log(`found note ${i} (by furigana): ${expressionField}`);
+                            foundByFurigana++;
+                            break;
+                        }
+                    }
+                    if (this.tryConvertingHiraganaToKatakanaOrOpposite) {
+                        let converted;
+                        if (wanakana.isKatakana(expressionField)) {
+                            converted = wanakana.toHiragana(expressionField);
+                        } else if (wanakana.isHiragana(expressionField)) {
+                            converted = wanakana.toKatakana(expressionField);
+                        }
+                        if (converted === word) {
+                            //console.log(`found note ${i} (by kana conversion): ${expressionField}`);
+                            foundByKanaConversion++;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!matchingNote) {
+                const tr = table.insertRow();
+                const tdFreq = tr.insertCell();
+                tdFreq.innerText = i;
+                const tdWord = tr.insertCell();
+                tdWord.innerText = word; // or note.fields[this.ankiExpressionFieldName].value;, need to save above in for loop
+            }
+        }
+        console.log("total found by furigana: " + foundByFurigana);
+        console.log("total found by kana conversion: " + foundByKanaConversion);
+        console.log("total WK words filtered: " + wkWordsFiltered);
+    }
+
+    isWKWord(word, furigana = undefined) {
+        if (wk_vocab[word]) {
+            return true;
+        } else if (furigana && wk_vocab[this.stripFurigana(furigana)]) {
+            return true;
+        }
+        return false;
     }
 }
 
