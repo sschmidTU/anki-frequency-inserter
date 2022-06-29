@@ -650,6 +650,7 @@ class FrequencyInserter {
         const progressLabel = document.getElementById("missingWordsProgressLabel");
 
         const filterWKVocab = document.getElementById("filterWKWordsCheckbox").checked;
+        const showExistingCards = document.getElementById("showExistingWordsCheckbox").checked;
 
         const missingWordsBox = document.getElementById("missingWordsBox");
         missingWordsBox.style.height = "400px";
@@ -677,6 +678,10 @@ class FrequencyInserter {
                     wkWordsFiltered++;
                     continue;
                 }
+            }
+            if (showExistingCards) {
+                this.addWordToBonusTable(word, table, i);
+                continue;
             }
 
             let matchingNote;
@@ -722,16 +727,20 @@ class FrequencyInserter {
                 }
             }
             if (!matchingNote) {
-                const tr = table.insertRow();
-                const tdFreq = tr.insertCell();
-                tdFreq.innerText = i;
-                const tdWord = tr.insertCell();
-                tdWord.innerText = word; // or note.fields[this.ankiExpressionFieldName].value;, need to save above in for loop
+                this.addWordToBonusTable(word, table, i); // maybe instead of word, take expression field
             }
         }
         console.log("total found by furigana: " + foundByFurigana);
         console.log("total found by kana conversion: " + foundByKanaConversion);
         console.log("total WK words filtered: " + wkWordsFiltered);
+    }
+
+    addWordToBonusTable(word, table, frequency) {
+        const tr = table.insertRow();
+        const tdFreq = tr.insertCell();
+        tdFreq.innerText = frequency;
+        const tdWord = tr.insertCell();
+        tdWord.innerText = word;
     }
 
     isWKWord(word, furigana = undefined) {

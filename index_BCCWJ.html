@@ -93,7 +93,7 @@ Sends the changes above to AnkiConnect, finally updating your Anki cards (notes)
 
 <div id="foot">
     <p>@ 2022-06 <a href="https://github.com/sschmidTU/anki-frequency-inserter">
-Anki Frequency Inserter v1.2.9.3</a> by <a href="https://community.wanikani.com/t/anki-word-frequency-inserter-learn-most-common-words-first/53407">Saimin@WK</a>
+Anki Frequency Inserter v1.2.9.4</a> by <a href="https://community.wanikani.com/t/anki-word-frequency-inserter-learn-most-common-words-first/53407">Saimin@WK</a>
 <br><span title="The BCCWJ corpus (Contemporary Written Japanese) uses relative frequency: 100 = 100th most common word">
 using BCCWJ corpus
 </span>
@@ -124,6 +124,9 @@ Show words between frequency <input type="text" id="missingWordsStartFreqInput" 
 <br>
 <input type="checkbox" id="filterWKWordsCheckbox"/>
   <label for="filterWKWordsCheckbox" title="Filter out vocabulary taught by wanikani.com">Don't show WK vocab</label>
+<br>
+<input type="checkbox" id="showExistingWordsCheckbox" value="false"/>
+  <label for="showExistingWordsCheckbox">Show words you have Anki cards for as well</label>
 <br>
 
 <a class="btn btn-blue" id="missingWordsBtn" title=''>Show Missing Words (Connect)</a>
