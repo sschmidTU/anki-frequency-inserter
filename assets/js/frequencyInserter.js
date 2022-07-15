@@ -357,9 +357,6 @@ class FrequencyInserter {
         let freqFurigana;
         let freqOtherKanaVersion;
         let freqStrippedHtml
-        if (expression === "如何") {
-            console.log("break");
-        }
         if (this.tryStrippingHtml) {
             const expressionStripped = this.stripHtml(expression);
             // if (frontStripped !== front) {
