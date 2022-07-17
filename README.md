@@ -42,6 +42,7 @@ If your notes don't have that field yet, you can add it in Anki via Tools -> Man
   * A solution to this would be patching AnkiConnect to add a setting in the config to set the `Access-Control-Allow-Private-Network` header to true.
 * If you're running this offline with a URL like file:// and getting an error like `Access to XMLHttpRequest at 'http://localhost:8765/' from origin 'null' has been blocked by CORS policy`, try this:
   * In Anki -> Tools -> Addons -> AnkiConnect -> Config, try adding `,"null"` to "webCorsOriginList", e.g.: `"webCorsOriginList": ["http:localhost", "null"]`
+  * Also, try setting webBindAddress to "127.0.0.1",
   * if that doesn't work, if using Chrome, try starting it with the command parameter --allow-file-access-from-files
   * Note that CORS offline support is limited.
 
