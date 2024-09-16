@@ -476,7 +476,7 @@ class FrequencyInserter {
             });
                     
             xhr.open('POST', this.ankiConnectUrl);
-            xhr.setRequestHeader('Access-Control-Request-Private-Network', true);
+            // xhr.setRequestHeader('Access-Control-Request-Private-Network', true); // Chrome refuses. Doesn't seem necessary.
             // if you're running this offline with an URL like file://*, CORS support will be limited.
             //   try adding ,"null" to "webCorsOriginList", e.g.: "webCorsOriginList": ["http:localhost", "null"]
             //   if that doesn't work, if using Chrome, try starting it with the command parameter --allow-file-access-from-files
@@ -686,7 +686,10 @@ class FrequencyInserter {
             if (noteIds.length !== 0) {
                 const notes = await this.notesInfo(noteIds);
                 for (const note of notes) {
-                    const expressionField = note.fields[this.ankiExpressionFieldName].value;
+                    const expressionField = note.fields[this.ankiExpressionFieldName]?.value;
+                    if (!expressionField) {
+                        continue;
+                    }
                     let furigana;
                     if (this.tryFuriganaFieldAsKey) {
                         furigana = note.fields["Furigana"]?.value;
