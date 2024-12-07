@@ -415,7 +415,7 @@ class FrequencyInserter {
             return mostFrequentFrequency;
         } else {
             const validFrequency = (frequency) => frequency >= 0;
-            for (const frequency in frequencies) {
+            for (const frequency of frequencies) {
                 if (validFrequency(frequency)) {
                     return frequency;
                 }
