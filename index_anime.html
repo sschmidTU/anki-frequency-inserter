@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html class="no-js" lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Inserts Japanese word frequencies into your Anki notes/cards."/>
+  <meta property="og:description" content="Inserts Japanese word frequencies into your Anki notes/cards."/>
+  <meta property="og:image" content="https://github.com/sschmidTU/anki-frequency-inserter/blob/main/assets/img/favicon_256.png?raw=true"/>
+  <meta property="og:image:type" content="image/png"/>
+  <meta property="og:image:width" content="256"/>
+  <meta property="og:image:height" content="256"/>
+  <meta property="og:title" content="Anki Frequency Inserter | Anime version"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:updated_time" content="1631042980"/>
+  <title>Anki Frequency Inserter (Anime version)</title>
+  <link href="assets/img/favicon.ico" rel="icon">
+  <link href="assets/css/style.css" media="screen, projection" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+	<div role="main" class="main">
+			
+	  <h1><img src="assets/img/favicon.ico" height="32"/>  Anki Frequency Inserter (Anime version)</h1>
+	  <div id="subtitle" style="text-align: center" title="The BCCWJ corpus (Contemporary Written Japanese) uses relative frequency: 100 = 100th most common word">
+Inserts Japanese word frequencies into a preexisting field (<i>FrequencyAnime</i>) in your <a href="https://apps.ankiweb.net/" class="a-blue">Anki</a> notes/cards.<br>
+<a href="https://github.com/sschmidTU/anki-frequency-inserter#anki-frequency-inserter" class="a-blue">Usage information and disclaimer</a></div>
+<hr>
+
+<p title="Options">Options:</p>
+<!--form id="optionsForm"-->
+  <label for="expressionFieldName" title="Name of the field in your Anki cards that has the word/expression for which the frequency should be searched. 'Front' by default, but depends on your Anki Note Types.">Name of expression field:</label>
+    <input type="text" id="expressionFieldName" name="expressionFieldName"><br>
+  <label for="freqFieldName" title="Name of the field in your Anki Cards where the frequency should be stored/inserted. You need to already have this field in your note types, see usage information above">Name of frequency &nbsp;field:</label>
+    <input type="text" id="freqFieldName" name="freqFieldName"><br>
+  <input type="checkbox" id="checkboxTryReading" name="checkboxTryReading" value="false">
+      <label for="checkboxTryReading" id="labelTryReading"
+        title="Try the reading field of your notes if no frequency was found for the Front/Expression field.
+This finds more frequencies, but in a few cases can be misleading, e.g. 盗る (uncommon form of 取る/とる, 'steal' nuance of 'to take') maybe shouldn't show the frequency of 取る/とる (2396th most common word).">
+Try Reading field for frequency (if none found for expression)</label>
+<br>
+  <input type="checkbox" id="checkboxRemoveInvalidEntries" name="checkboxRemoveInvalidEntries" value="false">
+      <label for="checkboxRemoveInvalidEntries" id="labelRemoveInvalidEntries"
+        title="Delete the contents of the frequency field for notes that don't have a frequency found using current settings.
+This could happen if you for example used the 'Try Reading field' option in the past, but want to revert that.">
+Remove frequency entries that are not found using current settings</label>
+<br>
+  <input type="checkbox" id="checkboxUpdateIncorrectEntries" name="checkboxUpdateIncorrectEntries" checked="true">
+      <label for="checkboxUpdateIncorrectEntries" id="labelUpdateIncorrectEntries"
+        title="Update frequencies that are a correctly formatted number but incorrect according to the frequency found using current settings.
+For example, we will anyways update a frequency like '* FrequencyInnocent: 520' as returned by Yomichan,
+but a frequency like '520' will only be changed with this option enabled.">
+Update frequency entries that are incorrect according to current settings</label>
+<br>
+  <input type="checkbox" id="checkboxTakeMostFrequent" name="checkboxTakeMostFrequent" checked="true">
+      <label for="checkboxTakeMostFrequent" id="labelTakeMostFrequent"
+        title="Take the most frequent frequency found among the forms of the word enabled via options (base form, reading field, furigana, hiragana/katakana, etc), instead of the first found.
+For example, for the BCCWJ corpus, this will return 995 for それとも, instead of only 536048 (very rare), because BCCWJ for some reason has this as 其れとも.">
+Take the most frequent frequency out of all forms of the word that are enabled</label>
+<!--/form-->
+<br>
+
+<hr>
+
+<a class="btn btn-blue" id="connectBtn" title='
+    Establish a connection to AnkiConnect, which will NOT change your Anki cards yet, but tell you which notes should have their frequency updated.
+Changes are only done to your cards when you click "Update cards".'>Connect to AnkiConnect</a><!--  <i>(doesn't update your cards yet. Please accept the connection in Anki.)</i-->
+
+<p title="Messages from Anki Inserter, or AnkiConnect responses">Information:</p>
+<div class="logbox" id="infoBox">Loading, please wait...</div>
+
+<p id="notesFreqNewBoxHeader">Notes where frequency will be newly added:</p>
+<div class="logbox" id="notesFreqNewBox"></div>
+
+<p id="changesBoxHeader">Notes where frequency will be changed:</p>
+<div class="logbox" id="changesBox"></div>
+
+<p id="removalsBoxHeader">Notes where frequency will be removed:</p>
+<div class="logbox" id="removalsBox"></div>
+
+<p id="noFreqFoundBoxHeader">Notes where no frequency was found in Anime Corpus:</p>
+<div class="logbox" id="noFreqFoundBox"></div>
+
+<p id="noChangesBoxHeader">Notes that already have the correct frequency:</p>
+<div class="logbox" id="noChangesBox"></div>
+
+<a class="btn btn-blue" id="updateCardsBtn" title="
+Sends the changes above to AnkiConnect, finally updating your Anki cards (notes).">Update cards</a>
+
+<p id="updatedBoxHeader">Updated:</p>
+<div class="logbox" id="updatedBox"></div>
+
+<hr>
+
+<div id="foot">
+    <p>@ 2024-09 <a href="https://github.com/sschmidTU/anki-frequency-inserter">
+Anki Frequency Inserter v1.2.9.5</a> by <a href="https://community.wanikani.com/t/anki-word-frequency-inserter-learn-most-common-words-first/53407">Saimin@WK</a>
+<br><span title="The Anime corpus (Contemporary Written Japanese) uses relative frequency: 100 = 100th most common word">
+using Anime corpus
+</span>
+
+<br>
+<label for="testFrequencyFieldName" title="Test field to show the frequency for an expression you enter">Test: Show frequency for</label>
+  <input type="text" id="testFrequencyFieldName" name="testFrequencyFieldName" lang="ja" value="知る" size="6">:
+  <span class="testFrequencyAnswer" id="testFrequencyAnswer">Loading...</span>
+
+<br><a href="https://sschmidtu.github.io/anki-frequency-inserter/index_anime.html?expressionFieldName=Front&frequencyFieldName=FrequencyAnime"
+title="Link to version of Frequency Inserter using InnocentCorpus (~5000 books, absolute frequency: 100 = occurs 100 times in these books), ~1.7MB to download on first visit">
+  Alternative: Version using Innocent corpus (~1.7MB)
+</a>
+
+</div>
+</div>
+
+
+<!-- show missing words -->
+<div class="main" id="showMissingWordsDiv">
+<br>
+
+<script src="assets/js/wk_vocab_short.js"></script>
+<div>
+<p><i>Bonus: Show words missing in your Anki cards</i></p>
+<br>
+Show words between frequency <input type="text" id="missingWordsStartFreqInput" value="3500" size="4"> and <input type="text" id="missingWordsEndFreqInput" value="3510" size="4">:
+<br>
+<input type="checkbox" id="filterWKWordsCheckbox"/>
+  <label for="filterWKWordsCheckbox" title="Filter out vocabulary taught by wanikani.com">Don't show WK vocab</label>
+<br>
+<input type="checkbox" id="showExistingWordsCheckbox" value="false"/>
+  <label for="showExistingWordsCheckbox">Show words you have Anki cards for as well</label>
+<br>
+
+<a class="btn btn-blue" id="missingWordsBtn" title=''>Show Missing Words (Connect)</a>
+<label id="missingWordsProgressLabel"></label>
+<br>
+<div class="logbox" id="missingWordsBox"></div>
+<br>
+
+</div>
+<!-- /show missing words-->
+
+<script src="assets/js/wanakana.min.js"></script><!-- for kana conversion, 24KB. needs to be loaded before frequencyInserter.js -->
+<script src="assets/js/anime/terms_anime.js"></script><!-- needs to be loaded before frequencyInserter.js -->
+<script src="assets/js/frequencyInserter.js"></script> 
+
+  </div>
+</body>
+</html>

@@ -1,7 +1,8 @@
 class FrequencyInserter {
     CorpusEnum = {
         Innocent: 0,
-        BCCWJ: 1
+        BCCWJ: 1,
+        Anime: 2
     };
     CorpusInfo = {
         Innocent: {
@@ -12,6 +13,11 @@ class FrequencyInserter {
         BCCWJ: {
             name: "BCCWJ corpus",
             display_name: "BCCWJ corpus",
+            lowerIsMoreFrequent: true
+        },
+        Anime: {
+            name: "Anime Rank List",
+            display_name: "Anime",
             lowerIsMoreFrequent: true
         }
     };
@@ -78,6 +84,11 @@ class FrequencyInserter {
             this.corpusUsedInfo = this.CorpusInfo.BCCWJ;
             this.ankiFrequencyFieldName = "FrequencyBCCWJ"; // may be overwritten later
             this.corpusDict = window.terms_BCCWJ;
+        } else if (window.terms_anime) { // loaded via script in index_BCCWJ.html
+            this.corpusUsed = this.CorpusEnum.Anime;
+            this.corpusUsedInfo = this.CorpusInfo.Anime;
+            this.ankiFrequencyFieldName = "FrequencyAnime"; // may be overwritten later
+            this.corpusDict = window.terms_anime;
         }
     }
 
@@ -211,6 +222,8 @@ class FrequencyInserter {
                 this.infoBox.innerHTML += "(higher frequency = more common within <i>InnocentCorpus</i>, ~5000 books)";
             } else if (this.corpusUsed === this.CorpusEnum.BCCWJ) {
                 this.infoBox.innerHTML += "(frequency 100 = 100th most common word within <i>BCCWJ Corpus</i> of Contemporary Written Japanese)";
+            } else if (this.corpusUsed === this.CorpusEnum.Anime) {
+                this.infoBox.innerHTML += "(frequency 100 = 100th most common word within <a href='https://docs.google.com/spreadsheets/d/1xeG-b85EHwo-yUDgwDLuWyYdwtnDgJAzr3VTmteMOaA/edit?gid=1886769620#gid=1886769620'>Anime Rank List</a>)";
             }
         }
     }
