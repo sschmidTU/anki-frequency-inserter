@@ -171,7 +171,7 @@ class FrequencyInserter {
             "params": noteParam
         });
         const freqNewDisplayed = freqNew === "" ? "(removed/empty)" : freqNew;
-        return `<tr><td><div lang="ja">${expression}</div></td>` +
+        return `<tr><td><div lang="ja" class="jpRow">${expression}</div></td>` +
             `<td><div class="longDiv">${id}</div></td>` + // without longDiv this gets cramped
             `<td><div>${freqNewDisplayed}</div></td>` +
             `<td><div class="lastDiv">${freqOld}</div></td>` + // without longDiv/lastDiv this gets cramped
@@ -278,22 +278,22 @@ class FrequencyInserter {
             if (!validFrequency(freqCorpus)) {
                 noFreqFoundCount++;
                 tableHtmlNoFreqFound += "<tr>" +
-                    `<td lang="ja">${expression}</td>` +
+                    `<td lang="ja" class="jpRow">${expression}</td>` +
                     "</tr>";
             } else {
                 note.newFrequency = freqCorpus;
                 if (freqExisting === "") {
                     this.notesWithoutFreq.push(note);
-                    tableHtmlNew += `<tr><td><div lang="ja">${expression}</div></td><td><div>${freqCorpus}</div></td></tr>`;
+                    tableHtmlNew += `<tr><td><div lang="ja" class="jpRow">${expression}</div></td><td><div>${freqCorpus}</div></td></tr>`;
                 } else if (!this.updateIncorrectFrequencies || correctFrequencyRegex.test(freqExisting) && Number(freqExisting) === freqCorpus && freqCorpus > 0) {
                     noChangesNotes.push(note);
-                    tableHtmlNoChanges += `<tr><div><td lang="ja">${expression}</div></td><td><div>${freqExisting}</div></td></tr>`;
+                    tableHtmlNoChanges += `<tr><div><td lang="ja" class="jpRow">${expression}</div></td><td><div>${freqExisting}</div></td></tr>`;
                 } else { // old frequency wasn't correct and will be updated
                     let freqOld = fields[this.ankiFrequencyFieldName].value;
                     // escape html
                     freqOld = freqOld.replaceAll("&","&amp;").replaceAll("<","&lt;");
                     tableHtmlChanges += "<tr>" +
-                        `<td><div lang="ja">${expression}</div></td>` +
+                        `<td><div lang="ja" class="jpRow">${expression}</div></td>` +
                         `<td>${freqCorpus}</td>` +
                         `<td>${freqOld}</td>` +
                         "</tr>";
@@ -304,7 +304,7 @@ class FrequencyInserter {
             if (this.removeInvalidEntries && freqCorpus === undefined && validFrequency(freqOldToRemove)) {
                 note.newFrequency = "";
                 this.notesWithRemoval.push(note);
-                tableHtmlRemovals += `<tr><td><div lang="ja">${expression}</div></td><td><div>${freqOldToRemove}</div></td></tr>`;
+                tableHtmlRemovals += `<tr><td><div lang="ja" class="jpRow">${expression}</div></td><td><div>${freqOldToRemove}</div></td></tr>`;
             }
         } // end for notes
         const tableEnd = "</tbody></table>";

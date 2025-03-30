@@ -337,6 +337,11 @@ th, td {
   /* font-size: 1.2em; */
 }
 
+.jpRow {
+  font-weight: 500; /* 400 = normal, 700 = bold */
+  /* lang: "ja"; */ /* unknown property for some reason. Now set in JS. */
+}
+
 .trHeader {
   font-style: italic;
 }
