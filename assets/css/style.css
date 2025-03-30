@@ -334,6 +334,7 @@ th, td {
   overflow: auto;
   border: 1px solid #eee;
   padding-right: 4px;
+  /* font-size: 1.2em; */
 }
 
 .trHeader {
@@ -348,6 +349,7 @@ td div {
   overflow: auto;
   display: block;
   padding-right: 0.2em;
+  /* font-size: 1.2em; */
 }
 
 /* for tables: <td><div> */
